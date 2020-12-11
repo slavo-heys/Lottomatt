@@ -1,74 +1,117 @@
-from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton
-import sys
-from PyQt5 import QtGui
-from PyQt5.QtCore import QRect
-from PyQt5 import QtCore
+from tkinter import *
+import tkinter as tk
+from tkinter import ttk
+import sqlite3
+from time import strftime
+import random
+from PIL import ImageTk, Image
 
-class Window(QMainWindow):
-    def __init__(self):
-        super().__init__()
+# Tworzenie bazy , jeśli nie istnieje
+conn = sqlite3.connect('baza.db')
+c = conn.cursor()
+c.execute(
+    """CREATE TABLE IF NOT EXISTS lotto(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        dzien int NOT NULL,
+        miesiac int NOT NULL,
+        rok int NOT NULL,
+        nr_losowania int NOT NULL,
+        l1 int NOT NULL,
+        l2 int NOT NULL,
+        l3 int NOT NULL,
+        l4 int NOT NULL,
+        l5 int NOT NULL,
+        l6 int NOT NULL);"""
+)
+c.execute(
+    """CREATE TABLE IF NOT EXISTS liczbyUser(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        dzien int NOT NULL,
+        miesiac int NOT NULL,
+        rok int NOT NULL,
+        lu1 int NOT NULL,
+        lu2 int NOT NULL,
+        lu3 int NOT NULL,
+        lu4 int NOT NULL,
+        lu5 int NOT NULL,
+        lu6 int NOT NULL
+    );"""
+)
+conn.commit()
+conn.close()
 
-        self.title = "Lottomat v 1.0"
-        self.top = 100
-        self.left = 100
-        self.width = 800
-        self.height = 600
-
-        self.initWindow()
-
-    def initWindow(self):
-        self.setWindowIcon(QtGui.QIcon("lotto.png"))
-        self.setWindowTitle(self.title)
-        self.setGeometry(self.left, self.top, self.width, self.height)
+class Program:
+    def __init__(self,master):
+        
 
         
-        self.UiComponents()
-        self.show()
-
-    def UiComponents(self):
-        button = QPushButton("  Dodaj wyniki losowania", self)
-        #button.move(10,20)
-        button.setGeometry(QRect(10,10,160,40))
-        button.setIcon(QtGui.QIcon("lotto_1.png"))
-        button.setIconSize(QtCore.QSize(50,50))
-        button.setToolTip("<h3>Dodaj wyniki nowego losowania</h3>")
-        button.clicked.connect(self.Add_wyniki)
-
-        button_1 = QPushButton("         Dodaj moje liczby", self)
-        button_1.setGeometry(QRect(10,55,160,40))
-        button_1.setIcon(QtGui.QIcon("lottery.png"))
-        button_1.setIconSize(QtCore.QSize(50,50))
-        button_1.setToolTip("<h3>Dodaj swój zestaw wytypowanych liczb</h3>")
-        button_1.clicked.connect(self.Add_liczby)
-
-        button_2 = QPushButton("  Sprawdź powtórzenia", self)
-        button_2.setGeometry(QRect(10,100,160,40))
-        button_2.setIcon(QtGui.QIcon("lotto_2.png"))
-        button_2.setIconSize(QtCore.QSize(40,40))
-        button_2.setToolTip("<h3>Sprawdź powtórzenia liczb we wszystkich losowaniach.</h3>")
-        button_2.clicked.connect(self.Powtorzenia)
-
-        button_3 = QPushButton("     Wyjście z programu", self)
-        button_3.setGeometry(QRect(10,145,160,40))
-        button_3.setIcon(QtGui.QIcon("lotto_3.png"))
-        button_3.setIconSize(QtCore.QSize(40,40))
-        button_3.setToolTip("<h3>Bezpieczne wyjście z programu.</h3>")
-        button_3.clicked.connect(self.Exit)
 
 
-    def Add_wyniki(self):
-        return
 
-    def Add_liczby(self):
-        return
+        def MenuRozwijane(self):
+            menu = Menu(root)
 
-    def Powtorzenia(self):
-        return
+            new_item = Menu(menu)
+            menu.add_cascade(label="Program", menu=new_item)
+            new_item.add_command(label="rejestracja użytkownika",command="")
+            new_item.add_separator()
+            new_item.add_command(label="wyjście z programu", command="")
+            
+            new_obsl = Menu(menu)
+            menu.add_cascade(label="Help", menu=new_obsl)
+            new_obsl.add_command(label="pomoc", command="")
+            
+            root.config(menu=menu)
 
-    def Exit(self):
-        sys.exit()
+        
 
+        MenuRozwijane(self)
 
-App = QApplication(sys.argv)
-Window = Window()
-sys.exit(App.exec())
+        self.ramka = Frame(root, height = 596, width= 160, bg = "#FAEBD7")
+        self.ramka.pack(padx=5, pady=5, side=LEFT)
+        
+
+        linia = tk.Label(self.ramka, text ="moja ramka", justify=LEFT)
+        linia.place(x=500, y=10)
+
+        but0=tk.Button(self.ramka, text="Dodaj losowanie", width=18, command = self.dodaj_losowanie)
+        but0.place(x=10,y=10)
+
+        but1=tk.Button(self.ramka, text="Dodaj swoje liczby ", width=18, command = self.dodaj_liczby)
+        but1.place(x=10,y=40)
+
+        but2=tk.Button(self.ramka, text="Powtarzające się liczby", width=18, command = "")
+        but2.place(x=10,y=70)
+
+        but3=tk.Button(self.ramka, text="Analiza par", width=18, command = "")
+        but3.place(x=10,y=100)
+
+        but4=tk.Button(self.ramka, text="Sprawdź moje liczby", width=18, command = "")
+        but4.place(x=10,y=130)
+
+        but4=tk.Button(self.ramka, text="Wyjście z programu", bg = "#F08080",width=18, command = self.zamknij_program)
+        but4.place(x=10,y=180)
+
+        
+
+    def dodaj_losowanie(self):
+        self.ramka1 = Frame(root,  height = 596, width= 650, bg = "#FAFAD2")
+        self.ramka1.pack(padx=5, pady=5, side = RIGHT)
+
+    def dodaj_liczby(self):
+        self.ramka1 = Frame(root,  height = 596, width= 650, bg = "#FAFAD2")
+        self.ramka1.pack(padx=5, pady=5, side = RIGHT)
+    
+    def zamknij_program(self):
+        root.destroy()
+           
+
+root = tk.Tk()
+root.geometry("800x600+100+100")  # rozmiar i położenie okna
+root.title("Lottomat")  # tytuł okna
+root.tk.call('wm', 'iconphoto', root._w, tk.PhotoImage(file='lotto.png'))
+root.resizable(False, False)  # blokowanie rozmiaru okienka
+
+Program(root)  # uruchomienie programu
+
+root.mainloop()
