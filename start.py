@@ -120,54 +120,54 @@ class Program:
         l3.place(x=10, y=70)
 
         self.dzien = StringVar()
-        e1 = tk.Entry(self.ramka1, textvariable=self.dzien,
+        self.e1 = tk.Entry(self.ramka1, textvariable=self.dzien,
                       font=("Arial", 13), width=3)
-        e1.place(x=229, y=10)
+        self.e1.place(x=229, y=10)
 
         self.miesiac = StringVar()
-        e1a = tk.Entry(self.ramka1, textvariable=self.miesiac,
+        self.e1a = tk.Entry(self.ramka1, textvariable=self.miesiac,
                        font=("Arial", 13), width=3)
-        e1a.place(x=316, y=10)
+        self.e1a.place(x=316, y=10)
 
         self.rok = StringVar()
-        e1a = tk.Entry(self.ramka1, textvariable=self.rok,
+        self.e1b = tk.Entry(self.ramka1, textvariable=self.rok,
                        font=("Arial", 13), width=5)
-        e1a.place(x=407, y=10)
+        self.e1b.place(x=407, y=10)
 
         self.nLosowania = StringVar()
-        e2 = tk.Entry(self.ramka1, textvariable=self.nLosowania,
+        self.e2 = tk.Entry(self.ramka1, textvariable=self.nLosowania,
                       font=("Arial", 13), width=8)
-        e2.place(x=200, y=35)
+        self.e2.place(x=200, y=35)
         # liczba1
         self.licz1 = StringVar()
-        e3 = tk.Entry(self.ramka1, textvariable=self.licz1,
+        self.e3 = tk.Entry(self.ramka1, textvariable=self.licz1,
                       font=("Arial", 13), width=2)
-        e3.place(x=200, y=70)
+        self.e3.place(x=200, y=70)
         # liczba2
         self.licz2 = StringVar()
-        e4 = tk.Entry(self.ramka1, textvariable=self.licz2,
+        self.e4 = tk.Entry(self.ramka1, textvariable=self.licz2,
                       font=("Arial", 13), width=2)
-        e4.place(x=230, y=70)
+        self.e4.place(x=230, y=70)
         # liczba 3
         self.licz3 = StringVar()
-        e5 = tk.Entry(self.ramka1, textvariable=self.licz3,
+        self.e5 = tk.Entry(self.ramka1, textvariable=self.licz3,
                       font=("Arial", 13), width=2)
-        e5.place(x=260, y=70)
+        self.e5.place(x=260, y=70)
         # liczba 4
         self.licz4 = StringVar()
-        e6 = tk.Entry(self.ramka1, textvariable=self.licz4,
+        self.e6 = tk.Entry(self.ramka1, textvariable=self.licz4,
                       font=("Arial", 13), width=2)
-        e6.place(x=290, y=70)
+        self.e6.place(x=290, y=70)
         # liczba 5
         self.licz5 = StringVar()
-        e7 = tk.Entry(self.ramka1, textvariable=self.licz5,
+        self.e7 = tk.Entry(self.ramka1, textvariable=self.licz5,
                       font=("Arial", 13), width=2)
-        e7.place(x=320, y=70)
+        self.e7.place(x=320, y=70)
         # liczba 6
         self.licz6 = StringVar()
-        e8 = tk.Entry(self.ramka1, textvariable=self.licz6,
+        self.e8 = tk.Entry(self.ramka1, textvariable=self.licz6,
                       font=("Arial", 13), width=2)
-        e8.place(x=350, y=70)
+        self.e8.place(x=350, y=70)
         # przycisk zapisz do tabli i wyczyść dane
         przycisk1 = tk.Button(self.ramka1, text="Zapisz do bazy",
                               bg="#F08080", command=self.zapisz_do_bazy)
@@ -181,7 +181,17 @@ class Program:
         return
 
     def clear_dane(self):
-        return
+        self.e1.delete(0,END)
+        self.e1a.delete(0,END)
+        self.e1b.delete(0,END)
+        self.e2.delete(0,END)
+        self.e3.delete(0,END)
+        self.e4.delete(0,END)
+        self.e5.delete(0,END)
+        self.e6.delete(0,END)
+        self.e7.delete(0,END)
+        self.e8.delete(0,END)
+
 
     def dodaj_liczby(self):
         self.ramka1 = Frame(root,  height=596, width=650, bg="#FAFAD2")
