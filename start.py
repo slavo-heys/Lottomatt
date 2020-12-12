@@ -294,9 +294,84 @@ class Program:
         self.e7.delete(0, END)
         self.e8.delete(0, END)
 
-    def dodaj_liczby(self):
+    def dodaj_liczby(self): # dodaj swoje liczby
         self.ramka1 = Frame(root,  height=596, width=650, bg="#FAFAD2")
         self.ramka1.pack(padx=5, pady=5, side=RIGHT)
+
+        linia1=tk.Label(self.ramka1, text="Wstaw datę w określone pola:", font=("Arial",13), bg="#FAFAD2")
+        linia1.place(x=10, y=10)
+
+        linia1a=tk.Label(self.ramka1, text="dd", font=("Arial",13), bg="#FAFAD2")
+        linia1a.place(x=240, y=10)
+
+        linia1b=tk.Label(self.ramka1, text="mm", font=("Arial",13), bg="#FAFAD2")
+        linia1b.place(x=320, y=10)
+
+        linia1c=tk.Label(self.ramka1, text="YYYY", font=("Arial",13), bg="#FAFAD2")
+        linia1c.place(x=400, y=10)
+
+        linia2=tk.Label(self.ramka1, text="Podaj kolejno 6 liczb:", font=("Arial",13), bg="#FAFAD2")
+        linia2.place(x=10, y=50)
+
+        self.dzienUsera=StringVar()
+        self.miesiacUsera=StringVar()
+        self.rokUsera=StringVar()
+        self.liczba1Usera=StringVar()
+        self.liczba2Usera=StringVar()
+        self.liczba3Usera=StringVar()
+        self.liczba4Usera=StringVar()
+        self.liczba5Usera=StringVar()
+        self.liczba6Usera=StringVar()
+
+        self.ent1 = tk.Entry(self.ramka1, textvariable=self.dzienUsera, width=3, font=("Arial",13))
+        self.ent1.place(x=265,y=10)
+
+        self.ent1a=tk.Entry(self.ramka1, textvariable=self.miesiacUsera, width=3, font=("Arial",13))
+        self.ent1a.place(x=352,y=10)
+
+        self.ent1b=tk.Entry(self.ramka1, textvariable=self.rokUsera, width=3, font=("Arial",13))
+        self.ent1b.place(x=455,y=10)
+
+        self.ent2a=tk.Entry(self.ramka1, textvariable = self.liczba1Usera, width=2, font=("Arial",13))
+        self.ent2a.place(x=200, y=50)
+
+        self.ent2b=tk.Entry(self.ramka1, textvariable = self.liczba2Usera, width=2, font=("Arial",13))
+        self.ent2b.place(x=240, y=50)
+
+        self.ent2c=tk.Entry(self.ramka1, textvariable = self.liczba3Usera, width=2, font=("Arial",13))
+        self.ent2c.place(x=280, y=50)
+
+        self.ent2d=tk.Entry(self.ramka1, textvariable = self.liczba4Usera, width=2, font=("Arial",13))
+        self.ent2d.place(x=320, y=50)
+
+        self.ent2e=tk.Entry(self.ramka1, textvariable = self.liczba5Usera, width=2, font=("Arial",13))
+        self.ent2e.place(x=360, y=50)
+
+        self.ent2f=tk.Entry(self.ramka1, textvariable = self.liczba6Usera, width=2, font=("Arial",13))
+        self.ent2f.place(x=400, y=50)
+
+        przycisk1 = tk.Button(self.ramka1, text="Zapisz do bazy",
+                              bg="#F08080", command="")
+        przycisk1.place(x=310, y=100)
+
+        przycisk2 = tk.Button(self.ramka1, text="Wyczyść dane",
+                              bg="#90EE90", command=self.wyczysc_dane)
+        przycisk2.place(x=210, y=100)
+
+        przycisk3 = tk.Button(self.ramka1, text=" Zamknij to okno",
+                              fg="white", bg="blue", command=self.zamknij_okno)
+        przycisk3.place(x=260, y=160)
+
+    def wyczysc_dane(self):
+        self.ent1.delete(0,END) 
+        self.ent1a.delete(0,END)
+        self.ent1b.delete(0,END)
+        self.ent2a.delete(0,END)
+        self.ent2b.delete(0,END)
+        self.ent2c.delete(0,END)
+        self.ent2d.delete(0,END)
+        self.ent2e.delete(0,END)
+        self.ent2f.delete(0,END) 
 
     def powtarzajace_liczby(self):
         self.ramka1 = Frame(root,  height=596, width=650, bg="#FAFAD2")
