@@ -51,7 +51,8 @@ class Program:
 
             new_item = Menu(menu)
             menu.add_cascade(label="Program", menu=new_item)
-            new_item.add_command(label="rejestracja użytkownika", command="")
+            new_item.add_command(
+                label="rejestracja użytkownika", command=self.rejestracja_usera)
             new_item.add_separator()
             new_item.add_command(label="wyjście z programu", command="")
 
@@ -92,8 +93,56 @@ class Program:
                          bg="#F08080", width=18, command=self.zamknij_program)
         but4.place(x=10, y=540)
 
+# definicja rejestracji użytkownika
+
+    def rejestracja_usera(self):
+        self.ramka1 = Frame(root,  height=180, width=600, bg="#DDA0DD")
+        self.ramka1.pack(padx=5, pady=5, side=TOP)
+        lab = tk.Label(self.ramka1, text="Podaj swoje imię:",
+                       font=("Arial", 13), bg="#DDA0DD")
+        lab.place(x=10, y=10)
+
+        lab2 = tk.Label(self.ramka1, text="Podaj swoje nazwisko:",
+                        font=("Arial", 13), bg="#DDA0DD")
+        lab2.place(x=10, y=45)
+
+        lab3 = tk.Label(self.ramka1, text="Podaj email kontaktowy",
+                        font=("Arial", 13), bg="#DDA0DD")
+        lab3.place(x=10, y=80)
+
+        self.imie=StringVar()
+        self.nazwisko=StringVar()
+        self.email=StringVar()
+
+        self.en=tk.Entry(self.ramka1, textvariable=self.imie,font=("Arial", 13))
+        self.en.place(x=200,y=10)
+
+        self.en1=tk.Entry(self.ramka1, textvariable=self.nazwisko,font=("Arial", 13))
+        self.en1.place(x=200, y=45)
+
+        self.en2=tk.Entry(self.ramka1, textvariable=self.email,font=("Arial", 13))
+        self.en2.place(x=200,y=80)
+
+        self.but=tk.Button(self.ramka1, text="wyczyść pola", bg="#DA70D6",command=self.czyscioch)
+        self.but.place(x=100, y=135)
+
+        self.but=tk.Button(self.ramka1, text="zarejestrój", fg = "white", bg="#800080",command=self.rejestracja)
+        self.but.place(x=183, y=135)
+
+        self.but=tk.Button(self.ramka1, text="zamknij to okno", bg="#556B2F",command=self.zamknij_okno)
+        self.but.place(x=250, y=135)
+
+    def czyscioch(self):
+        self.en.delete(0,END)
+        self.en1.delete(0, END)
+        self.en2.delete(0,END)
+
+    def rejestracja(self):
+        self.imieU=self.imie.get()
+
+
     def dodaj_losowanie(self):
-        self.ramka1 = Frame(root,  height=200, width=650, bg="#FAFAD2")
+        self.ramka1 = Frame(root,  height=596, width=650, bg="#FAFAD2")
         self.ramka1.pack(padx=5, pady=5, side=TOP)
 
         # Formularz - dodaj liczby z losowania
@@ -283,7 +332,6 @@ class Program:
             conn.commit()
             conn.close()
             self.zamknij_okno()
-            
 
     def clear_dane(self):
         self.e1.delete(0, END)
@@ -391,7 +439,23 @@ class Program:
         self.szescU = self.liczba6Usera.get()
         self.terazRokUser = strftime('%Y')
 
-        if self.dzienU =="":
+        if self.dzienU == "":
+            self.puste_pole()
+        elif self.miesiacU == "":
+            self.puste_pole()
+        elif self.rokU == "":
+            self.puste_pole()
+        elif self.jedenU == "":
+            self.puste_pole()
+        elif self.dwaU == "":
+            self.puste_pole()
+        elif self.trzyU == "":
+            self.puste_pole()
+        elif self.czteryU == "":
+            self.puste_pole()
+        elif self.piecU == "":
+            self.puste_pole()
+        elif self.szescU == "":
             self.puste_pole()
         else:
             self.dzienU = int(self.dzienU)
@@ -404,41 +468,40 @@ class Program:
             self.piecU = int(self.piecU)
             self.szescU = int(self.szescU)
 
-        if self.dzienU >31 or self.dzien <1:
+        if self.dzienU > 31 or self.dzienU < 1:
             self.info_dzien()
-        elif self.miesiacU > 12 or self.miesiacU <1:
+        elif self.miesiacU > 12 or self.miesiacU < 1:
             self.info_miesiac()
         elif self.rokU > self.terazRokUser or self.rokU < 1957:
             self.info_rok()
-        elif self.jedenU==self.dwaU or self.jedenU==self.trzyU or self.jedenU==self.czteryU or self.jedenU==self.piecU or self.jedenU==self.szescU:
+        elif self.jedenU == self.dwaU or self.jedenU == self.trzyU or self.jedenU == self.czteryU or self.jedenU == self.piecU or self.jedenU == self.szescU:
             self.info_tesame()
-        elif self.dwaU==self.trzyU or self.dwaU==self.czteryU or self.dwaU==self.piecU or self.dwaU==self.szescU:
+        elif self.dwaU == self.trzyU or self.dwaU == self.czteryU or self.dwaU == self.piecU or self.dwaU == self.szescU:
             self.info_tesame()
-        elif self.trzyU==self.czteryU or self.trzyU==self.piecU or self.trzyU==self.szescU:
+        elif self.trzyU == self.czteryU or self.trzyU == self.piecU or self.trzyU == self.szescU:
             self.info_tesame()
-        elif self.czteryU==self.piecU or self.czteryU==self.szescU:
+        elif self.czteryU == self.piecU or self.czteryU == self.szescU:
             self.info_tesame()
-        elif self.piecU==self.szescU:
+        elif self.piecU == self.szescU:
             self.info_tesame()
         else:
             conn = sqlite3.connect('baza.db')
             c = conn.cursor()
             c.execute("INSERT INTO liczbyUser VALUES(NULL, :dzien, :miesiac, :rok, :lu1, :lu2, :lu3, :lu4, :lu5, :lu6)",
-                    {
-                        'dzien': self.dzienUsera.get(),
-                        'miesiac': self.miesiacUsera.get(),
-                        'rok': self.rokUsera.get(),
-                        'lu1': self.liczba1Usera.get(),
-                        'lu2': self.liczba2Usera.get(),
-                        'lu3': self.liczba3Usera.get(),
-                        'lu4': self.liczba4Usera.get(),
-                        'lu5': self.liczba5Usera.get(),
-                        'lu6': self.liczba6Usera.get()
-                    })
+                      {
+                          'dzien': self.dzienUsera.get(),
+                          'miesiac': self.miesiacUsera.get(),
+                          'rok': self.rokUsera.get(),
+                          'lu1': self.liczba1Usera.get(),
+                          'lu2': self.liczba2Usera.get(),
+                          'lu3': self.liczba3Usera.get(),
+                          'lu4': self.liczba4Usera.get(),
+                          'lu5': self.liczba5Usera.get(),
+                          'lu6': self.liczba6Usera.get()
+                      })
             conn.commit()
             conn.close()
             self.zamknij_okno()
-                
 
     def wyczysc_dane(self):
         self.ent1.delete(0, END)
