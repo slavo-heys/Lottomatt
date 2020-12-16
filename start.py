@@ -97,6 +97,8 @@ class Program:
     def liczby_powtorzone(self):
         self.ramka1 = Frame(root, height=500, width=600, bg = "#DDA0DD")
         self.ramka1.pack(padx=5, pady=5, side=TOP)
+        l1= tk.Label(self.ramka1, text = " 1 ", font=("Arial", 13), bg = "green")
+        l1.place(x=10, y=40)
 
 # definicja rejestracji użytkownika
 
