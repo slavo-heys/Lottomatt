@@ -78,8 +78,7 @@ class Program:
                          width=18, command=self.dodaj_liczby)
         but1.place(x=10, y=40)
 
-        but2 = tk.Button(
-            self.ramka, text="Powtarzające się liczby", width=18, command="")
+        but2 = tk.Button(self.ramka, text="Powtarzające się liczby", width=18, command=self.liczby_powtorzone)
         but2.place(x=10, y=70)
 
         but3 = tk.Button(self.ramka, text="Analiza par", width=18, command="")
@@ -92,6 +91,12 @@ class Program:
         but4 = tk.Button(self.ramka, text="Wyjście z programu",
                          bg="#F08080", width=18, command=self.zamknij_program)
         but4.place(x=10, y=540)
+
+# definicja sprawdza powtarzające się liczby
+    
+    def liczby_powtorzone(self):
+        self.ramka1 = Frame(root, height=500, width=600, bg = "#DDA0DD")
+        self.ramka1.pack(padx=5, pady=5, side=TOP)
 
 # definicja rejestracji użytkownika
 
