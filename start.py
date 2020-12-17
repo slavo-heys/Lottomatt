@@ -95,10 +95,183 @@ class Program:
 # definicja sprawdza powtarzające się liczby
     
     def liczby_powtorzone(self):
-        self.ramka1 = Frame(root, height=500, width=600, bg = "#DDA0DD")
+        self.ramka1 = Frame(root, height=550, width=600, bg = "#E9967A")
         self.ramka1.pack(padx=5, pady=5, side=TOP)
-        l1= tk.Label(self.ramka1, text = " 1 ", font=("Arial", 13), bg = "green")
-        l1.place(x=10, y=40)
+        b=50
+        for a in range(1,11):
+            tk.Label(self.ramka1, text = " "+str(a)+" ", font=("Arial", 13), bg = "green").place(x=b, y=40)
+            b=b+50
+
+        b=50
+        for a in range(11,21):
+            tk.Label(self.ramka1, text = " "+str(a)+" ", font=("Arial", 13), bg = "green").place(x=b, y=140)
+            b=b+50
+
+        b=50
+        for a in range(21,31):
+            tk.Label(self.ramka1, text = " "+str(a)+" ", font=("Arial", 13), bg = "green").place(x=b, y=240)
+            b=b+50
+
+        b=50
+        for a in range(31,41):
+            tk.Label(self.ramka1, text = " "+str(a)+" ", font=("Arial", 13), bg = "green").place(x=b, y=340)
+            b=b+50
+
+        b=50
+        for a in range(41,50):
+            tk.Label(self.ramka1, text = " "+str(a)+" ", font=("Arial", 13), bg = "green").place(x=b, y=440)
+            b=b+50
+
+        l1=0;l2=0;l3=0;l4=0;l5=0;l6=0;l7=0;l8=0;l9=0;l10=0
+        l11=0;l12=0;l13=0;l14=0;l15=0;l16=0;l17=0;l18=0;l19=0;l20=0
+        l21=0;l22=0;l23=0;l24=0;l25=0;l26=0;l27=0;l28=0;l29=0;l30=0
+        l31=0;l32=0;l33=0;l34=0;l35=0;l36=0;l37=0;l38=0;l39=0;l40=0
+        l41=0;l42=0;l43=0;l44=0;l45=0;l46=0;l47=0;l48=0;l49=0
+
+        lista=[]
+
+        conn = sqlite3.connect('baza.db')
+        c = conn.cursor()
+        c.execute("SELECT * FROM lotto")
+        records = c.fetchall()
+        for rec in records:
+            liczba_1 = str(rec[5])
+            liczba_1=int(liczba_1)
+
+            liczba_2 = str(rec[6])
+            liczba_2=int(liczba_2)
+
+            liczba_3 = str(rec[7])
+            liczba_3=int(liczba_3)
+
+            liczba_4 = str(rec[8])
+            liczba_4=int(liczba_4)
+            
+            liczba_5 = str(rec[9])
+            liczba_5=int(liczba_5)
+            
+            liczba_6 = str(rec[10])
+            liczba_6=int(liczba_6)
+
+            lista.append(liczba_1)
+            lista.append(liczba_2)
+            lista.append(liczba_3)
+            lista.append(liczba_4)
+            lista.append(liczba_5)
+            lista.append(liczba_6)
+
+        l1 = lista.count(1); l2 = lista.count(2); l3=lista.count(3); l4=lista.count(4); l5=lista.count(5)
+        l6 = lista.count(6); l7 = lista.count(7); l8=lista.count(8); l9=lista.count(9); l9=lista.count(10)
+
+        l11 = lista.count(11); l12 = lista.count(12); l13=lista.count(13); l14=lista.count(14); l15=lista.count(15)
+        l16 = lista.count(16); l17 = lista.count(17); l18=lista.count(18); l19=lista.count(19); l20=lista.count(20)
+
+        l21 = lista.count(21); l22 = lista.count(22); l23=lista.count(23); l24=lista.count(24); l25=lista.count(25)
+        l26 = lista.count(26); l27 = lista.count(27); l28=lista.count(28); l29=lista.count(29); l30=lista.count(30)
+
+        l31 = lista.count(31); l32 = lista.count(32); l33=lista.count(33); l34=lista.count(34); l35=lista.count(35)
+        l36 = lista.count(36); l37 = lista.count(37); l38=lista.count(38); l39=lista.count(39); l40=lista.count(40)
+
+        l41 = lista.count(41); l42 = lista.count(42); l43=lista.count(43); l44=lista.count(44); l45=lista.count(45)
+        l46 = lista.count(46); l47 = lista.count(47); l48=lista.count(48); l49=lista.count(49)
+            
+            
+
+        self.lin1 = tk.Label(self.ramka1, text = " "+str(l1)+" ", font=("Arial", 13), bg="yellow")
+        self.lin1.place(x=50, y=65)
+
+        self.lin2 = tk.Label(self.ramka1, text = " "+str(l2)+" ", font=("Arial", 13), bg="yellow")
+        self.lin2.place(x=100, y=65)
+
+        self.lin3 = tk.Label(self.ramka1, text = " "+str(l3)+" ", font=("Arial", 13), bg="yellow")
+        self.lin3.place(x=150, y=65)
+
+        self.lin4 = tk.Label(self.ramka1, text = " "+str(l4)+" ", font=("Arial", 13), bg="yellow")
+        self.lin4.place(x=200, y=65)
+
+        self.lin5 = tk.Label(self.ramka1, text = " "+str(l5)+" ", font=("Arial", 13), bg="yellow")
+        self.lin5.place(x=250, y=65)
+
+        self.lin6 = tk.Label(self.ramka1, text = " "+str(l6)+" ", font=("Arial", 13), bg="yellow")
+        self.lin6.place(x=300, y=65)
+
+        self.lin7 = tk.Label(self.ramka1, text = " "+str(l7)+" ", font=("Arial", 13), bg="yellow")
+        self.lin7.place(x=350, y=65)
+
+        self.lin8 = tk.Label(self.ramka1, text = " "+str(l8)+" ", font=("Arial", 13), bg="yellow")
+        self.lin8.place(x=400, y=65)
+
+        self.lin9 = tk.Label(self.ramka1, text = " "+str(l9)+" ", font=("Arial", 13), bg="yellow")
+        self.lin9.place(x=450, y=65)
+
+        self.lin10 = tk.Label(self.ramka1, text = " "+str(l10)+" ", font=("Arial", 13), bg="yellow")
+        self.lin10.place(x=500, y=65)
+
+        self.lin11 = tk.Label(self.ramka1, text = " "+str(l11)+" ", font=("Arial", 13), bg="yellow")
+        self.lin11.place(x=50, y=165)
+
+        self.lin12 = tk.Label(self.ramka1, text = " "+str(l12)+" ", font=("Arial", 13), bg="yellow")
+        self.lin12.place(x=100, y=165)
+
+        self.lin13 = tk.Label(self.ramka1, text = " "+str(l13)+" ", font=("Arial", 13), bg="yellow")
+        self.lin13.place(x=150, y=165)
+
+        self.lin14 = tk.Label(self.ramka1, text = " "+str(l14)+" ", font=("Arial", 13), bg="yellow")
+        self.lin14.place(x=200, y=165)
+
+        self.lin15 = tk.Label(self.ramka1, text = " "+str(l15)+" ", font=("Arial", 13), bg="yellow")
+        self.lin15.place(x=250, y=165)
+
+        self.lin16 = tk.Label(self.ramka1, text = " "+str(l16)+" ", font=("Arial", 13), bg="yellow")
+        self.lin16.place(x=300, y=165)
+
+        self.lin17 = tk.Label(self.ramka1, text = " "+str(l17)+" ", font=("Arial", 13), bg="yellow")
+        self.lin17.place(x=350, y=165)
+
+        self.lin18 = tk.Label(self.ramka1, text = " "+str(l18)+" ", font=("Arial", 13), bg="yellow")
+        self.lin18.place(x=400, y=165)
+
+        self.lin19 = tk.Label(self.ramka1, text = " "+str(l19)+" ", font=("Arial", 13), bg="yellow")
+        self.lin19.place(x=450, y=165)
+
+        self.lin20 = tk.Label(self.ramka1, text = " "+str(l20)+" ", font=("Arial", 13), bg="yellow")
+        self.lin20.place(x=500, y=165)
+
+        self.lin21 = tk.Label(self.ramka1, text = " "+str(l21)+" ", font=("Arial", 13), bg="yellow")
+        self.lin21.place(x=50, y=265)
+
+        self.lin22 = tk.Label(self.ramka1, text = " "+str(l22)+" ", font=("Arial", 13), bg="yellow")
+        self.lin22.place(x=100, y=265)
+
+        self.lin23 = tk.Label(self.ramka1, text = " "+str(l23)+" ", font=("Arial", 13), bg="yellow")
+        self.lin23.place(x=150, y=265)
+
+        self.lin24 = tk.Label(self.ramka1, text = " "+str(l24)+" ", font=("Arial", 13), bg="yellow")
+        self.lin24.place(x=200, y=265)
+
+        self.lin25 = tk.Label(self.ramka1, text = " "+str(l25)+" ", font=("Arial", 13), bg="yellow")
+        self.lin25.place(x=250, y=265)
+
+        self.lin26 = tk.Label(self.ramka1, text = " "+str(l26)+" ", font=("Arial", 13), bg="yellow")
+        self.lin26.place(x=300, y=265)
+
+        self.lin27 = tk.Label(self.ramka1, text = " "+str(l27)+" ", font=("Arial", 13), bg="yellow")
+        self.lin27.place(x=350, y=265)
+
+        self.lin28 = tk.Label(self.ramka1, text = " "+str(l28)+" ", font=("Arial", 13), bg="yellow")
+        self.lin28.place(x=400, y=265)
+
+        self.lin29 = tk.Label(self.ramka1, text = " "+str(l29)+" ", font=("Arial", 13), bg="yellow")
+        self.lin29.place(x=450, y=265)
+
+        self.lin30 = tk.Label(self.ramka1, text = " "+str(l30)+" ", font=("Arial", 13), bg="yellow")
+        self.lin30.place(x=500, y=265)
+            
+
+        
+        
+
+        
 
 # definicja rejestracji użytkownika
 
@@ -329,7 +502,7 @@ class Program:
                           'miesiac': self.miesiacLos,
                           'rok': self.rokLos,
                           'nr_losowania': self.numerLos,
-                          'l1': self.liczbaP,
+                          'l1': self.liczbaPi,
                           'l2': self.liczbaD,
                           'l3': self.liczbaT,
                           'l4': self.liczbaCz,
