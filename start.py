@@ -7,6 +7,7 @@ import random
 from PIL import ImageTk, Image
 import time
 from tkinter.messagebox import showinfo
+from operator import itemgetter
 
 # Tworzenie bazy , jeśli nie istnieje
 conn = sqlite3.connect('baza.db')
@@ -131,36 +132,63 @@ class Program:
                         pary.append([liczba_1, liczba_2])
                     elif liczba_1 == i and liczba_3 == j:
                         pary.append([liczba_1, liczba_3])
-                    elif liczba_1==i and liczba_4==j:
-                        pary.append([liczba_1,liczba_4])
-                    elif liczba_1 == i and liczba_5==j:
+                    elif liczba_1 == i and liczba_4 == j:
+                        pary.append([liczba_1, liczba_4])
+                    elif liczba_1 == i and liczba_5 == j:
                         pary.append([liczba_1, liczba_5])
                     elif liczba_1 == i and liczba_6 == j:
                         pary.append([liczba_1, liczba_6])
                     elif liczba_2 == i and liczba_3 == j:
                         pary.append([liczba_2, liczba_3])
-                    elif liczba_2 ==i and liczba_4 ==j:
+                    elif liczba_2 == i and liczba_4 == j:
                         pary.append([liczba_2, liczba_4])
                     elif liczba_2 == i and liczba_5 == j:
                         pary.append([liczba_2, liczba_5])
                     elif liczba_2 == i and liczba_6 == j:
                         pary.append([liczba_2, liczba_6])
-                    elif liczba_3 ==i and liczba_4 == j:
+                    elif liczba_3 == i and liczba_4 == j:
                         pary.append([liczba_3, liczba_4])
                     elif liczba_3 == i and liczba_5 == j:
                         pary.append([liczba_3, liczba_5])
-                    elif liczba_3 ==i and liczba_6==j:
+                    elif liczba_3 == i and liczba_6 == j:
                         pary.append([liczba_3, liczba_6])
-                    elif liczba_4 ==i and liczba_5==j:
+                    elif liczba_4 == i and liczba_5 == j:
                         pary.append([liczba_4, liczba_5])
-                    elif liczba_4 ==i and liczba_6==j:
+                    elif liczba_4 == i and liczba_6 == j:
                         pary.append([liczba_4, liczba_6])
-                    elif liczba_5 == i and liczba_6==j:
+                    elif liczba_5 == i and liczba_6 == j:
                         pary.append([liczba_5, liczba_6])
 
         pary.sort()
 
-        print(pary)
+        linia1 = tk.Label(self.ramka1, text="Dwadzieścia par najczęściej występujących w losowaniach", font=(
+            "Arial", 14), bg="#FAFAD2")
+        linia1.place(x=30, y=20)
+
+        lista = []
+        for r in range(1, 50):
+            for t in range(1, 50):
+                licznik = pary.count([r, t])
+                lista.append([licznik, r, t])
+
+        lista.sort()
+        r = len(lista)
+        r = r-1
+        t = r-20
+        ypolozenie = 50
+        while r > t:
+            losowanie = (lista[r][0])
+            liczbaPara1 = (lista[r][1])
+            liczbaPara2 = (lista[r][2])
+            r -= 1
+
+            tk.Label(self.ramka1, text="Para liczb: "+str(liczbaPara1)+" - "+str(liczbaPara2) +
+                     "   wystąpień: "+str(losowanie), font=("Arial", 12), bg="#FAFAD2").place(x=40, y=ypolozenie)
+            ypolozenie += 25
+
+        but = tk.Button(self.ramka1, text="zamknij to okno",
+                        bg="#DC143C", command=self.zamknij_okno)
+        but.place(x=400, y=500)
 
 
 # definicja sprawdza powtarzające się liczby
