@@ -82,7 +82,8 @@ class Program:
                          width=18, command=self.liczby_powtorzone)
         but2.place(x=10, y=70)
 
-        but3 = tk.Button(self.ramka, text="Analiza par", width=18, command="")
+        but3 = tk.Button(self.ramka, text="Analiza par",
+                         width=18, command=self.analiza_par)
         but3.place(x=10, y=100)
 
         but4 = tk.Button(self.ramka, text="Sprawdź moje liczby",
@@ -93,7 +94,77 @@ class Program:
                          bg="#F08080", width=18, command=self.zamknij_program)
         but4.place(x=10, y=540)
 
+# definicja analizy par
+
+    def analiza_par(self):
+        self.ramka1 = Frame(root,  height=596, width=650, bg="#FAFAD2")
+        self.ramka1.pack(padx=5, pady=5, side=RIGHT)
+
+        pary = []
+
+        conn = sqlite3.connect('baza.db')
+        c = conn.cursor()
+        c.execute("SELECT * FROM lotto")
+        records = c.fetchall()
+        for rec in records:
+            liczba_1 = str(rec[5])
+            liczba_1 = int(liczba_1)
+
+            liczba_2 = str(rec[6])
+            liczba_2 = int(liczba_2)
+
+            liczba_3 = str(rec[7])
+            liczba_3 = int(liczba_3)
+
+            liczba_4 = str(rec[8])
+            liczba_4 = int(liczba_4)
+
+            liczba_5 = str(rec[9])
+            liczba_5 = int(liczba_5)
+
+            liczba_6 = str(rec[10])
+            liczba_6 = int(liczba_6)
+
+            for i in range(1, 50):
+                for j in range(1, 50):
+                    if liczba_1 == i and liczba_2 == j:
+                        pary.append([liczba_1, liczba_2])
+                    elif liczba_1 == i and liczba_3 == j:
+                        pary.append([liczba_1, liczba_3])
+                    elif liczba_1==i and liczba_4==j:
+                        pary.append([liczba_1,liczba_4])
+                    elif liczba_1 == i and liczba_5==j:
+                        pary.append([liczba_1, liczba_5])
+                    elif liczba_1 == i and liczba_6 == j:
+                        pary.append([liczba_1, liczba_6])
+                    elif liczba_2 == i and liczba_3 == j:
+                        pary.append([liczba_2, liczba_3])
+                    elif liczba_2 ==i and liczba_4 ==j:
+                        pary.append([liczba_2, liczba_4])
+                    elif liczba_2 == i and liczba_5 == j:
+                        pary.append([liczba_2, liczba_5])
+                    elif liczba_2 == i and liczba_6 == j:
+                        pary.append([liczba_2, liczba_6])
+                    elif liczba_3 ==i and liczba_4 == j:
+                        pary.append([liczba_3, liczba_4])
+                    elif liczba_3 == i and liczba_5 == j:
+                        pary.append([liczba_3, liczba_5])
+                    elif liczba_3 ==i and liczba_6==j:
+                        pary.append([liczba_3, liczba_6])
+                    elif liczba_4 ==i and liczba_5==j:
+                        pary.append([liczba_4, liczba_5])
+                    elif liczba_4 ==i and liczba_6==j:
+                        pary.append([liczba_4, liczba_6])
+                    elif liczba_5 == i and liczba_6==j:
+                        pary.append([liczba_5, liczba_6])
+
+        pary.sort()
+
+        print(pary)
+
+
 # definicja sprawdza powtarzające się liczby
+
 
     def liczby_powtorzone(self):
         self.ramka1 = Frame(root, height=550, width=600, bg="#E9967A")
@@ -459,6 +530,12 @@ class Program:
         self.lin49 = tk.Label(self.ramka1, text=" " +
                               str(l49)+" ", font=("Arial", 13), bg="yellow")
         self.lin49.place(x=450, y=465)
+
+        self.przycisk = tk.Button(
+            self.ramka1, text="zamknij to okno", bg="#DC143C", command=self.zamknij_okno)
+        self.przycisk.place(x=250, y=510)
+
+        conn.close()
 
 # definicja rejestracji użytkownika
 
@@ -885,18 +962,6 @@ class Program:
         self.ent2d.delete(0, END)
         self.ent2e.delete(0, END)
         self.ent2f.delete(0, END)
-
-    def powtarzajace_liczby(self):
-        self.ramka1 = Frame(root,  height=596, width=650, bg="#FAFAD2")
-        self.ramka1.pack(padx=5, pady=5, side=RIGHT)
-
-    def analiza_par(self):
-        self.ramka1 = Frame(root,  height=596, width=650, bg="#FAFAD2")
-        self.ramka1.pack(padx=5, pady=5, side=RIGHT)
-
-    def sprawdz_wyniki(self):
-        self.ramka1 = Frame(root,  height=596, width=650, bg="#FAFAD2")
-        self.ramka1.pack(padx=5, pady=5, side=RIGHT)
 
     def zamknij_program(self):
         root.destroy()
