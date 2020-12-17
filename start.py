@@ -78,7 +78,8 @@ class Program:
                          width=18, command=self.dodaj_liczby)
         but1.place(x=10, y=40)
 
-        but2 = tk.Button(self.ramka, text="Powtarzające się liczby", width=18, command=self.liczby_powtorzone)
+        but2 = tk.Button(self.ramka, text="Powtarzające się liczby",
+                         width=18, command=self.liczby_powtorzone)
         but2.place(x=10, y=70)
 
         but3 = tk.Button(self.ramka, text="Analiza par", width=18, command="")
@@ -93,42 +94,91 @@ class Program:
         but4.place(x=10, y=540)
 
 # definicja sprawdza powtarzające się liczby
-    
+
     def liczby_powtorzone(self):
-        self.ramka1 = Frame(root, height=550, width=600, bg = "#E9967A")
+        self.ramka1 = Frame(root, height=550, width=600, bg="#E9967A")
         self.ramka1.pack(padx=5, pady=5, side=TOP)
-        b=50
-        for a in range(1,11):
-            tk.Label(self.ramka1, text = " "+str(a)+" ", font=("Arial", 13), bg = "green").place(x=b, y=40)
-            b=b+50
+        b = 50
+        for a in range(1, 11):
+            tk.Label(self.ramka1, text=" "+str(a)+" ",
+                     font=("Arial", 13), bg="green").place(x=b, y=40)
+            b = b+50
 
-        b=50
-        for a in range(11,21):
-            tk.Label(self.ramka1, text = " "+str(a)+" ", font=("Arial", 13), bg = "green").place(x=b, y=140)
-            b=b+50
+        b = 50
+        for a in range(11, 21):
+            tk.Label(self.ramka1, text=" "+str(a)+" ",
+                     font=("Arial", 13), bg="green").place(x=b, y=140)
+            b = b+50
 
-        b=50
-        for a in range(21,31):
-            tk.Label(self.ramka1, text = " "+str(a)+" ", font=("Arial", 13), bg = "green").place(x=b, y=240)
-            b=b+50
+        b = 50
+        for a in range(21, 31):
+            tk.Label(self.ramka1, text=" "+str(a)+" ",
+                     font=("Arial", 13), bg="green").place(x=b, y=240)
+            b = b+50
 
-        b=50
-        for a in range(31,41):
-            tk.Label(self.ramka1, text = " "+str(a)+" ", font=("Arial", 13), bg = "green").place(x=b, y=340)
-            b=b+50
+        b = 50
+        for a in range(31, 41):
+            tk.Label(self.ramka1, text=" "+str(a)+" ",
+                     font=("Arial", 13), bg="green").place(x=b, y=340)
+            b = b+50
 
-        b=50
-        for a in range(41,50):
-            tk.Label(self.ramka1, text = " "+str(a)+" ", font=("Arial", 13), bg = "green").place(x=b, y=440)
-            b=b+50
+        b = 50
+        for a in range(41, 50):
+            tk.Label(self.ramka1, text=" "+str(a)+" ",
+                     font=("Arial", 13), bg="green").place(x=b, y=440)
+            b = b+50
 
-        l1=0;l2=0;l3=0;l4=0;l5=0;l6=0;l7=0;l8=0;l9=0;l10=0
-        l11=0;l12=0;l13=0;l14=0;l15=0;l16=0;l17=0;l18=0;l19=0;l20=0
-        l21=0;l22=0;l23=0;l24=0;l25=0;l26=0;l27=0;l28=0;l29=0;l30=0
-        l31=0;l32=0;l33=0;l34=0;l35=0;l36=0;l37=0;l38=0;l39=0;l40=0
-        l41=0;l42=0;l43=0;l44=0;l45=0;l46=0;l47=0;l48=0;l49=0
+        l1 = 0
+        l2 = 0
+        l3 = 0
+        l4 = 0
+        l5 = 0
+        l6 = 0
+        l7 = 0
+        l8 = 0
+        l9 = 0
+        l10 = 0
+        l11 = 0
+        l12 = 0
+        l13 = 0
+        l14 = 0
+        l15 = 0
+        l16 = 0
+        l17 = 0
+        l18 = 0
+        l19 = 0
+        l20 = 0
+        l21 = 0
+        l22 = 0
+        l23 = 0
+        l24 = 0
+        l25 = 0
+        l26 = 0
+        l27 = 0
+        l28 = 0
+        l29 = 0
+        l30 = 0
+        l31 = 0
+        l32 = 0
+        l33 = 0
+        l34 = 0
+        l35 = 0
+        l36 = 0
+        l37 = 0
+        l38 = 0
+        l39 = 0
+        l40 = 0
+        l41 = 0
+        l42 = 0
+        l43 = 0
+        l44 = 0
+        l45 = 0
+        l46 = 0
+        l47 = 0
+        l48 = 0
+        l49 = 0
 
-        lista=[]
+        lista = []
 
         conn = sqlite3.connect('baza.db')
         c = conn.cursor()
@@ -136,22 +186,22 @@ class Program:
         records = c.fetchall()
         for rec in records:
             liczba_1 = str(rec[5])
-            liczba_1=int(liczba_1)
+            liczba_1 = int(liczba_1)
 
             liczba_2 = str(rec[6])
-            liczba_2=int(liczba_2)
+            liczba_2 = int(liczba_2)
 
             liczba_3 = str(rec[7])
-            liczba_3=int(liczba_3)
+            liczba_3 = int(liczba_3)
 
             liczba_4 = str(rec[8])
-            liczba_4=int(liczba_4)
-            
+            liczba_4 = int(liczba_4)
+
             liczba_5 = str(rec[9])
-            liczba_5=int(liczba_5)
-            
+            liczba_5 = int(liczba_5)
+
             liczba_6 = str(rec[10])
-            liczba_6=int(liczba_6)
+            liczba_6 = int(liczba_6)
 
             lista.append(liczba_1)
             lista.append(liczba_2)
@@ -160,118 +210,255 @@ class Program:
             lista.append(liczba_5)
             lista.append(liczba_6)
 
-        l1 = lista.count(1); l2 = lista.count(2); l3=lista.count(3); l4=lista.count(4); l5=lista.count(5)
-        l6 = lista.count(6); l7 = lista.count(7); l8=lista.count(8); l9=lista.count(9); l9=lista.count(10)
+        l1 = lista.count(1)
+        l2 = lista.count(2)
+        l3 = lista.count(3)
+        l4 = lista.count(4)
+        l5 = lista.count(5)
+        l6 = lista.count(6)
+        l7 = lista.count(7)
+        l8 = lista.count(8)
+        l9 = lista.count(9)
+        l9 = lista.count(10)
 
-        l11 = lista.count(11); l12 = lista.count(12); l13=lista.count(13); l14=lista.count(14); l15=lista.count(15)
-        l16 = lista.count(16); l17 = lista.count(17); l18=lista.count(18); l19=lista.count(19); l20=lista.count(20)
+        l11 = lista.count(11)
+        l12 = lista.count(12)
+        l13 = lista.count(13)
+        l14 = lista.count(14)
+        l15 = lista.count(15)
+        l16 = lista.count(16)
+        l17 = lista.count(17)
+        l18 = lista.count(18)
+        l19 = lista.count(19)
+        l20 = lista.count(20)
 
-        l21 = lista.count(21); l22 = lista.count(22); l23=lista.count(23); l24=lista.count(24); l25=lista.count(25)
-        l26 = lista.count(26); l27 = lista.count(27); l28=lista.count(28); l29=lista.count(29); l30=lista.count(30)
+        l21 = lista.count(21)
+        l22 = lista.count(22)
+        l23 = lista.count(23)
+        l24 = lista.count(24)
+        l25 = lista.count(25)
+        l26 = lista.count(26)
+        l27 = lista.count(27)
+        l28 = lista.count(28)
+        l29 = lista.count(29)
+        l30 = lista.count(30)
 
-        l31 = lista.count(31); l32 = lista.count(32); l33=lista.count(33); l34=lista.count(34); l35=lista.count(35)
-        l36 = lista.count(36); l37 = lista.count(37); l38=lista.count(38); l39=lista.count(39); l40=lista.count(40)
+        l31 = lista.count(31)
+        l32 = lista.count(32)
+        l33 = lista.count(33)
+        l34 = lista.count(34)
+        l35 = lista.count(35)
+        l36 = lista.count(36)
+        l37 = lista.count(37)
+        l38 = lista.count(38)
+        l39 = lista.count(39)
+        l40 = lista.count(40)
 
-        l41 = lista.count(41); l42 = lista.count(42); l43=lista.count(43); l44=lista.count(44); l45=lista.count(45)
-        l46 = lista.count(46); l47 = lista.count(47); l48=lista.count(48); l49=lista.count(49)
-            
-            
+        l41 = lista.count(41)
+        l42 = lista.count(42)
+        l43 = lista.count(43)
+        l44 = lista.count(44)
+        l45 = lista.count(45)
+        l46 = lista.count(46)
+        l47 = lista.count(47)
+        l48 = lista.count(48)
+        l49 = lista.count(49)
 
-        self.lin1 = tk.Label(self.ramka1, text = " "+str(l1)+" ", font=("Arial", 13), bg="yellow")
+        self.lin1 = tk.Label(self.ramka1, text=" "+str(l1) +
+                             " ", font=("Arial", 13), bg="yellow")
         self.lin1.place(x=50, y=65)
 
-        self.lin2 = tk.Label(self.ramka1, text = " "+str(l2)+" ", font=("Arial", 13), bg="yellow")
+        self.lin2 = tk.Label(self.ramka1, text=" "+str(l2) +
+                             " ", font=("Arial", 13), bg="yellow")
         self.lin2.place(x=100, y=65)
 
-        self.lin3 = tk.Label(self.ramka1, text = " "+str(l3)+" ", font=("Arial", 13), bg="yellow")
+        self.lin3 = tk.Label(self.ramka1, text=" "+str(l3) +
+                             " ", font=("Arial", 13), bg="yellow")
         self.lin3.place(x=150, y=65)
 
-        self.lin4 = tk.Label(self.ramka1, text = " "+str(l4)+" ", font=("Arial", 13), bg="yellow")
+        self.lin4 = tk.Label(self.ramka1, text=" "+str(l4) +
+                             " ", font=("Arial", 13), bg="yellow")
         self.lin4.place(x=200, y=65)
 
-        self.lin5 = tk.Label(self.ramka1, text = " "+str(l5)+" ", font=("Arial", 13), bg="yellow")
+        self.lin5 = tk.Label(self.ramka1, text=" "+str(l5) +
+                             " ", font=("Arial", 13), bg="yellow")
         self.lin5.place(x=250, y=65)
 
-        self.lin6 = tk.Label(self.ramka1, text = " "+str(l6)+" ", font=("Arial", 13), bg="yellow")
+        self.lin6 = tk.Label(self.ramka1, text=" "+str(l6) +
+                             " ", font=("Arial", 13), bg="yellow")
         self.lin6.place(x=300, y=65)
 
-        self.lin7 = tk.Label(self.ramka1, text = " "+str(l7)+" ", font=("Arial", 13), bg="yellow")
+        self.lin7 = tk.Label(self.ramka1, text=" "+str(l7) +
+                             " ", font=("Arial", 13), bg="yellow")
         self.lin7.place(x=350, y=65)
 
-        self.lin8 = tk.Label(self.ramka1, text = " "+str(l8)+" ", font=("Arial", 13), bg="yellow")
+        self.lin8 = tk.Label(self.ramka1, text=" "+str(l8) +
+                             " ", font=("Arial", 13), bg="yellow")
         self.lin8.place(x=400, y=65)
 
-        self.lin9 = tk.Label(self.ramka1, text = " "+str(l9)+" ", font=("Arial", 13), bg="yellow")
+        self.lin9 = tk.Label(self.ramka1, text=" "+str(l9) +
+                             " ", font=("Arial", 13), bg="yellow")
         self.lin9.place(x=450, y=65)
 
-        self.lin10 = tk.Label(self.ramka1, text = " "+str(l10)+" ", font=("Arial", 13), bg="yellow")
+        self.lin10 = tk.Label(self.ramka1, text=" " +
+                              str(l10)+" ", font=("Arial", 13), bg="yellow")
         self.lin10.place(x=500, y=65)
 
-        self.lin11 = tk.Label(self.ramka1, text = " "+str(l11)+" ", font=("Arial", 13), bg="yellow")
+        self.lin11 = tk.Label(self.ramka1, text=" " +
+                              str(l11)+" ", font=("Arial", 13), bg="yellow")
         self.lin11.place(x=50, y=165)
 
-        self.lin12 = tk.Label(self.ramka1, text = " "+str(l12)+" ", font=("Arial", 13), bg="yellow")
+        self.lin12 = tk.Label(self.ramka1, text=" " +
+                              str(l12)+" ", font=("Arial", 13), bg="yellow")
         self.lin12.place(x=100, y=165)
 
-        self.lin13 = tk.Label(self.ramka1, text = " "+str(l13)+" ", font=("Arial", 13), bg="yellow")
+        self.lin13 = tk.Label(self.ramka1, text=" " +
+                              str(l13)+" ", font=("Arial", 13), bg="yellow")
         self.lin13.place(x=150, y=165)
 
-        self.lin14 = tk.Label(self.ramka1, text = " "+str(l14)+" ", font=("Arial", 13), bg="yellow")
+        self.lin14 = tk.Label(self.ramka1, text=" " +
+                              str(l14)+" ", font=("Arial", 13), bg="yellow")
         self.lin14.place(x=200, y=165)
 
-        self.lin15 = tk.Label(self.ramka1, text = " "+str(l15)+" ", font=("Arial", 13), bg="yellow")
+        self.lin15 = tk.Label(self.ramka1, text=" " +
+                              str(l15)+" ", font=("Arial", 13), bg="yellow")
         self.lin15.place(x=250, y=165)
 
-        self.lin16 = tk.Label(self.ramka1, text = " "+str(l16)+" ", font=("Arial", 13), bg="yellow")
+        self.lin16 = tk.Label(self.ramka1, text=" " +
+                              str(l16)+" ", font=("Arial", 13), bg="yellow")
         self.lin16.place(x=300, y=165)
 
-        self.lin17 = tk.Label(self.ramka1, text = " "+str(l17)+" ", font=("Arial", 13), bg="yellow")
+        self.lin17 = tk.Label(self.ramka1, text=" " +
+                              str(l17)+" ", font=("Arial", 13), bg="yellow")
         self.lin17.place(x=350, y=165)
 
-        self.lin18 = tk.Label(self.ramka1, text = " "+str(l18)+" ", font=("Arial", 13), bg="yellow")
+        self.lin18 = tk.Label(self.ramka1, text=" " +
+                              str(l18)+" ", font=("Arial", 13), bg="yellow")
         self.lin18.place(x=400, y=165)
 
-        self.lin19 = tk.Label(self.ramka1, text = " "+str(l19)+" ", font=("Arial", 13), bg="yellow")
+        self.lin19 = tk.Label(self.ramka1, text=" " +
+                              str(l19)+" ", font=("Arial", 13), bg="yellow")
         self.lin19.place(x=450, y=165)
 
-        self.lin20 = tk.Label(self.ramka1, text = " "+str(l20)+" ", font=("Arial", 13), bg="yellow")
+        self.lin20 = tk.Label(self.ramka1, text=" " +
+                              str(l20)+" ", font=("Arial", 13), bg="yellow")
         self.lin20.place(x=500, y=165)
 
-        self.lin21 = tk.Label(self.ramka1, text = " "+str(l21)+" ", font=("Arial", 13), bg="yellow")
+        self.lin21 = tk.Label(self.ramka1, text=" " +
+                              str(l21)+" ", font=("Arial", 13), bg="yellow")
         self.lin21.place(x=50, y=265)
 
-        self.lin22 = tk.Label(self.ramka1, text = " "+str(l22)+" ", font=("Arial", 13), bg="yellow")
+        self.lin22 = tk.Label(self.ramka1, text=" " +
+                              str(l22)+" ", font=("Arial", 13), bg="yellow")
         self.lin22.place(x=100, y=265)
 
-        self.lin23 = tk.Label(self.ramka1, text = " "+str(l23)+" ", font=("Arial", 13), bg="yellow")
+        self.lin23 = tk.Label(self.ramka1, text=" " +
+                              str(l23)+" ", font=("Arial", 13), bg="yellow")
         self.lin23.place(x=150, y=265)
 
-        self.lin24 = tk.Label(self.ramka1, text = " "+str(l24)+" ", font=("Arial", 13), bg="yellow")
+        self.lin24 = tk.Label(self.ramka1, text=" " +
+                              str(l24)+" ", font=("Arial", 13), bg="yellow")
         self.lin24.place(x=200, y=265)
 
-        self.lin25 = tk.Label(self.ramka1, text = " "+str(l25)+" ", font=("Arial", 13), bg="yellow")
+        self.lin25 = tk.Label(self.ramka1, text=" " +
+                              str(l25)+" ", font=("Arial", 13), bg="yellow")
         self.lin25.place(x=250, y=265)
 
-        self.lin26 = tk.Label(self.ramka1, text = " "+str(l26)+" ", font=("Arial", 13), bg="yellow")
+        self.lin26 = tk.Label(self.ramka1, text=" " +
+                              str(l26)+" ", font=("Arial", 13), bg="yellow")
         self.lin26.place(x=300, y=265)
 
-        self.lin27 = tk.Label(self.ramka1, text = " "+str(l27)+" ", font=("Arial", 13), bg="yellow")
+        self.lin27 = tk.Label(self.ramka1, text=" " +
+                              str(l27)+" ", font=("Arial", 13), bg="yellow")
         self.lin27.place(x=350, y=265)
 
-        self.lin28 = tk.Label(self.ramka1, text = " "+str(l28)+" ", font=("Arial", 13), bg="yellow")
+        self.lin28 = tk.Label(self.ramka1, text=" " +
+                              str(l28)+" ", font=("Arial", 13), bg="yellow")
         self.lin28.place(x=400, y=265)
 
-        self.lin29 = tk.Label(self.ramka1, text = " "+str(l29)+" ", font=("Arial", 13), bg="yellow")
+        self.lin29 = tk.Label(self.ramka1, text=" " +
+                              str(l29)+" ", font=("Arial", 13), bg="yellow")
         self.lin29.place(x=450, y=265)
 
-        self.lin30 = tk.Label(self.ramka1, text = " "+str(l30)+" ", font=("Arial", 13), bg="yellow")
+        self.lin30 = tk.Label(self.ramka1, text=" " +
+                              str(l30)+" ", font=("Arial", 13), bg="yellow")
         self.lin30.place(x=500, y=265)
-            
 
-        
-        
+        self.lin31 = tk.Label(self.ramka1, text=" " +
+                              str(l31)+" ", font=("Arial", 13), bg="yellow")
+        self.lin31.place(x=50, y=365)
 
-        
+        self.lin32 = tk.Label(self.ramka1, text=" " +
+                              str(l32)+" ", font=("Arial", 13), bg="yellow")
+        self.lin32.place(x=100, y=365)
+
+        self.lin33 = tk.Label(self.ramka1, text=" " +
+                              str(l33)+" ", font=("Arial", 13), bg="yellow")
+        self.lin33.place(x=150, y=365)
+
+        self.lin34 = tk.Label(self.ramka1, text=" " +
+                              str(l34)+" ", font=("Arial", 13), bg="yellow")
+        self.lin34.place(x=200, y=365)
+
+        self.lin35 = tk.Label(self.ramka1, text=" " +
+                              str(l35)+" ", font=("Arial", 13), bg="yellow")
+        self.lin35.place(x=250, y=365)
+
+        self.lin36 = tk.Label(self.ramka1, text=" " +
+                              str(l36)+" ", font=("Arial", 13), bg="yellow")
+        self.lin36.place(x=300, y=365)
+
+        self.lin37 = tk.Label(self.ramka1, text=" " +
+                              str(l37)+" ", font=("Arial", 13), bg="yellow")
+        self.lin37.place(x=350, y=365)
+
+        self.lin38 = tk.Label(self.ramka1, text=" " +
+                              str(l38)+" ", font=("Arial", 13), bg="yellow")
+        self.lin38.place(x=400, y=365)
+
+        self.lin39 = tk.Label(self.ramka1, text=" " +
+                              str(l39)+" ", font=("Arial", 13), bg="yellow")
+        self.lin39.place(x=450, y=365)
+
+        self.lin40 = tk.Label(self.ramka1, text=" " +
+                              str(l40)+" ", font=("Arial", 13), bg="yellow")
+        self.lin40.place(x=500, y=365)
+
+        self.lin41 = tk.Label(self.ramka1, text=" " +
+                              str(l41)+" ", font=("Arial", 13), bg="yellow")
+        self.lin41.place(x=50, y=465)
+
+        self.lin42 = tk.Label(self.ramka1, text=" " +
+                              str(l42)+" ", font=("Arial", 13), bg="yellow")
+        self.lin42.place(x=100, y=465)
+
+        self.lin43 = tk.Label(self.ramka1, text=" " +
+                              str(l43)+" ", font=("Arial", 13), bg="yellow")
+        self.lin43.place(x=150, y=465)
+
+        self.lin44 = tk.Label(self.ramka1, text=" " +
+                              str(l44)+" ", font=("Arial", 13), bg="yellow")
+        self.lin44.place(x=200, y=465)
+
+        self.lin45 = tk.Label(self.ramka1, text=" " +
+                              str(l45)+" ", font=("Arial", 13), bg="yellow")
+        self.lin45.place(x=250, y=465)
+
+        self.lin46 = tk.Label(self.ramka1, text=" " +
+                              str(l46)+" ", font=("Arial", 13), bg="yellow")
+        self.lin46.place(x=300, y=465)
+
+        self.lin47 = tk.Label(self.ramka1, text=" " +
+                              str(l47)+" ", font=("Arial", 13), bg="yellow")
+        self.lin47.place(x=350, y=465)
+
+        self.lin48 = tk.Label(self.ramka1, text=" " +
+                              str(l48)+" ", font=("Arial", 13), bg="yellow")
+        self.lin48.place(x=400, y=465)
+
+        self.lin49 = tk.Label(self.ramka1, text=" " +
+                              str(l49)+" ", font=("Arial", 13), bg="yellow")
+        self.lin49.place(x=450, y=465)
 
 # definicja rejestracji użytkownika
 
@@ -290,36 +477,41 @@ class Program:
                         font=("Arial", 13), bg="#DDA0DD")
         lab3.place(x=10, y=80)
 
-        self.imie=StringVar()
-        self.nazwisko=StringVar()
-        self.email=StringVar()
+        self.imie = StringVar()
+        self.nazwisko = StringVar()
+        self.email = StringVar()
 
-        self.en=tk.Entry(self.ramka1, textvariable=self.imie,font=("Arial", 13))
-        self.en.place(x=200,y=10)
+        self.en = tk.Entry(
+            self.ramka1, textvariable=self.imie, font=("Arial", 13))
+        self.en.place(x=200, y=10)
 
-        self.en1=tk.Entry(self.ramka1, textvariable=self.nazwisko,font=("Arial", 13))
+        self.en1 = tk.Entry(
+            self.ramka1, textvariable=self.nazwisko, font=("Arial", 13))
         self.en1.place(x=200, y=45)
 
-        self.en2=tk.Entry(self.ramka1, textvariable=self.email,font=("Arial", 13))
-        self.en2.place(x=200,y=80)
+        self.en2 = tk.Entry(
+            self.ramka1, textvariable=self.email, font=("Arial", 13))
+        self.en2.place(x=200, y=80)
 
-        self.but=tk.Button(self.ramka1, text="wyczyść pola", bg="#DA70D6",command=self.czyscioch)
+        self.but = tk.Button(self.ramka1, text="wyczyść pola",
+                             bg="#DA70D6", command=self.czyscioch)
         self.but.place(x=100, y=135)
 
-        self.but=tk.Button(self.ramka1, text="zarejestrój", fg = "white", bg="#800080",command=self.rejestracja)
+        self.but = tk.Button(self.ramka1, text="zarejestrój",
+                             fg="white", bg="#800080", command=self.rejestracja)
         self.but.place(x=183, y=135)
 
-        self.but=tk.Button(self.ramka1, text="zamknij to okno", bg="#556B2F",command=self.zamknij_okno)
+        self.but = tk.Button(self.ramka1, text="zamknij to okno",
+                             bg="#556B2F", command=self.zamknij_okno)
         self.but.place(x=250, y=135)
 
     def czyscioch(self):
-        self.en.delete(0,END)
+        self.en.delete(0, END)
         self.en1.delete(0, END)
-        self.en2.delete(0,END)
+        self.en2.delete(0, END)
 
     def rejestracja(self):
-        self.imieU=self.imie.get()
-
+        self.imieU = self.imie.get()
 
     def dodaj_losowanie(self):
         self.ramka1 = Frame(root,  height=596, width=650, bg="#FAFAD2")
