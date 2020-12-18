@@ -15,10 +15,8 @@ c = conn.cursor()
 c.execute(
     """CREATE TABLE IF NOT EXISTS lotto(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        dzien text NOT NULL,
-        miesiac text NOT NULL,
-        rok text NOT NULL,
         nr_losowania text NOT NULL,
+        data text NOT NULL,
         l1 text NOT NULL,
         l2 text NOT NULL,
         l3 text NOT NULL,
@@ -108,22 +106,22 @@ class Program:
         c.execute("SELECT * FROM lotto")
         records = c.fetchall()
         for rec in records:
-            liczba_1 = str(rec[5])
+            liczba_1 = str(rec[3])
             liczba_1 = int(liczba_1)
 
-            liczba_2 = str(rec[6])
+            liczba_2 = str(rec[4])
             liczba_2 = int(liczba_2)
 
-            liczba_3 = str(rec[7])
+            liczba_3 = str(rec[5])
             liczba_3 = int(liczba_3)
 
-            liczba_4 = str(rec[8])
+            liczba_4 = str(rec[6])
             liczba_4 = int(liczba_4)
 
-            liczba_5 = str(rec[9])
+            liczba_5 = str(rec[7])
             liczba_5 = int(liczba_5)
 
-            liczba_6 = str(rec[10])
+            liczba_6 = str(rec[8])
             liczba_6 = int(liczba_6)
 
             for i in range(1, 50):
@@ -284,22 +282,22 @@ class Program:
         c.execute("SELECT * FROM lotto")
         records = c.fetchall()
         for rec in records:
-            liczba_1 = str(rec[5])
+            liczba_1 = str(rec[3])
             liczba_1 = int(liczba_1)
 
-            liczba_2 = str(rec[6])
+            liczba_2 = str(rec[4])
             liczba_2 = int(liczba_2)
 
-            liczba_3 = str(rec[7])
+            liczba_3 = str(rec[5])
             liczba_3 = int(liczba_3)
 
-            liczba_4 = str(rec[8])
+            liczba_4 = str(rec[6])
             liczba_4 = int(liczba_4)
 
-            liczba_5 = str(rec[9])
+            liczba_5 = str(rec[7])
             liczba_5 = int(liczba_5)
 
-            liczba_6 = str(rec[10])
+            liczba_6 = str(rec[8])
             liczba_6 = int(liczba_6)
 
             lista.append(liczba_1)
