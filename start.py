@@ -133,23 +133,213 @@ class Program:
                     elif l1 == q and l2 == w and l4 ==e:trojki.append([l1, l2,l4])
                     elif l1 == q and l2 == w and l5 ==e:trojki.append([l1, l2,l5])
                     elif l1 == q and l2 == w and l6 ==e:trojki.append([l1, l2,l6])
+
+                    elif l1 == q and l3 == w and l2 ==e:trojki.append([l1, l3,l2])
                     elif l1 == q and l3 == w and l4 ==e:trojki.append([l1, l3,l4])
                     elif l1 == q and l3 == w and l5 ==e:trojki.append([l1, l3,l6])
                     elif l1 == q and l3 == w and l6 ==e:trojki.append([l1, l3,l6])
+
+                    elif l1 == q and l4 == w and l2 ==e:trojki.append([l1, l4,l2])
+                    elif l1 == q and l4 == w and l3 ==e:trojki.append([l1, l4,l3])
                     elif l1 == q and l4 == w and l5 ==e:trojki.append([l1, l4,l5])
                     elif l1 == q and l4 == w and l6 ==e:trojki.append([l1, l4,l6])
+
+                    elif l1 == q and l5 == w and l2 ==e:trojki.append([l1, l5,l2])
+                    elif l1 == q and l5 == w and l3 ==e:trojki.append([l1, l5,l3])
+                    elif l1 == q and l5 == w and l4 ==e:trojki.append([l1, l5,l4])
                     elif l1 == q and l5 == w and l6 ==e:trojki.append([l1, l5,l6])
 
+                    elif l1 == q and l6 == w and l2 ==e:trojki.append([l1, l6,l2])
+                    elif l1 == q and l6 == w and l3 ==e:trojki.append([l1, l6,l3])
+                    elif l1 == q and l6 == w and l4 ==e:trojki.append([l1, l6,l4])
+                    elif l1 == q and l6 == w and l5 ==e:trojki.append([l1, l6,l5])
+
+                    elif l2 == q and l1 == w and l3 ==e:trojki.append([l2, l1,l3])
+                    elif l2 == q and l1 == w and l4 ==e:trojki.append([l2, l1,l4])
+                    elif l2 == q and l1 == w and l5 ==e:trojki.append([l2, l1,l5])
+                    elif l2 == q and l1 == w and l6 ==e:trojki.append([l2, l1,l6])
+
+                    elif l2 == q and l3 == w and l1 ==e:trojki.append([l2, l3,l1])
                     elif l2 == q and l3 == w and l4 ==e:trojki.append([l2, l3,l4])
                     elif l2 == q and l3 == w and l5 ==e:trojki.append([l2, l3,l5])
                     elif l2 == q and l3 == w and l6 ==e:trojki.append([l2, l3,l6])
+
+                    elif l2 == q and l4 == w and l1 ==e:trojki.append([l2, l4,l1])
+                    elif l2 == q and l4 == w and l3 ==e:trojki.append([l2, l4,l3])
                     elif l2 == q and l4 == w and l5 ==e:trojki.append([l2, l4,l5])
                     elif l2 == q and l4 == w and l6 ==e:trojki.append([l2, l4,l6])
+
+                    elif l2 == q and l5 == w and l1 ==e:trojki.append([l2, l5,l1])
+                    elif l2 == q and l5 == w and l3 ==e:trojki.append([l2, l5,l3])
+                    elif l2 == q and l5 == w and l4 ==e:trojki.append([l2, l5,l4])
                     elif l2 == q and l5 == w and l6 ==e:trojki.append([l2, l5,l6])
 
-        print(trojki)
+                    elif l2 == q and l6 == w and l1 ==e:trojki.append([l2, l6,l1])
+                    elif l2 == q and l6 == w and l3 ==e:trojki.append([l2, l6,l3])
+                    elif l2 == q and l6 == w and l4 ==e:trojki.append([l2, l6,l4])
+                    elif l2 == q and l6 == w and l5 ==e:trojki.append([l2, l6,l5])
+
+                    elif l3 == q and l1 == w and l2 ==e:trojki.append([l3, l1,l2])
+                    elif l3 == q and l1 == w and l4==e:trojki.append([l3, l1,l4])
+                    elif l3 == q and l1 == w and l5 ==e:trojki.append([l3, l1,l5])
+                    elif l3 == q and l1 == w and l6 ==e:trojki.append([l3, l1,l6])
+
+                    elif l3 == q and l2 == w and l1 ==e:trojki.append([l3, l2,l1])
+                    elif l3 == q and l2 == w and l4==e:trojki.append([l3, l2,l4])
+                    elif l3 == q and l2 == w and l5 ==e:trojki.append([l3, l2,l5])
+                    elif l3 == q and l2 == w and l6 ==e:trojki.append([l3, l2,l6])
+                    
+                    elif l3 == q and l4 == w and l1 ==e:trojki.append([l3, l4,l1])
+                    elif l3 == q and l4 == w and l2 ==e:trojki.append([l3, l4,l2])
+                    elif l3 == q and l4 == w and l5 ==e:trojki.append([l3, l4,l5])
+                    elif l3 == q and l4 == w and l6 ==e:trojki.append([l3, l4,l6])
+
+                    elif l3 == q and l5 == w and l1 ==e:trojki.append([l3, l5,l1])
+                    elif l3 == q and l5 == w and l2 ==e:trojki.append([l3, l5,l2])
+                    elif l3 == q and l5 == w and l4 ==e:trojki.append([l3, l5,l4])
+                    elif l3 == q and l5 == w and l6 ==e:trojki.append([l3, l5,l6])
+
+                    elif l3 == q and l6 == w and l1 ==e:trojki.append([l3, l6,l1])
+                    elif l3 == q and l6 == w and l2 ==e:trojki.append([l3, l6,l2])
+                    elif l3 == q and l6 == w and l4 ==e:trojki.append([l3, l6,l4])
+                    elif l3 == q and l6 == w and l5 ==e:trojki.append([l3, l6,l5])
+
+                    elif l4 == q and l1 == w and l1 ==e:trojki.append([l4, l1,l1])
+                    elif l4 == q and l1 == w and l2 ==e:trojki.append([l4, l1,l2])
+                    elif l4 == q and l1 == w and l5 ==e:trojki.append([l4, l1,l5])
+                    elif l4 == q and l1 == w and l6 ==e:trojki.append([l4, l1,l6])
+
+                    elif l4 == q and l2 == w and l1 ==e:trojki.append([l4, l2,l1])
+                    elif l4 == q and l2 == w and l3 ==e:trojki.append([l4, l2,l3])
+                    elif l4 == q and l2 == w and l5 ==e:trojki.append([l4, l2,l5])
+                    elif l4 == q and l2 == w and l6 ==e:trojki.append([l4, l2,l6])
+
+                    elif l4 == q and l3 == w and l1 ==e:trojki.append([l4, l3,l1])
+                    elif l4 == q and l3 == w and l2 ==e:trojki.append([l4, l3,l2])
+                    elif l4 == q and l3 == w and l5 ==e:trojki.append([l4, l3,l5])
+                    elif l4 == q and l3 == w and l6 ==e:trojki.append([l4, l3,l6])
+
+                    elif l4 == q and l5 == w and l1 ==e:trojki.append([l4, l5,l1])
+                    elif l4 == q and l5 == w and l2 ==e:trojki.append([l4, l5,l2])
+                    elif l4 == q and l5 == w and l3 ==e:trojki.append([l4, l5,l3])
+                    elif l4 == q and l5 == w and l6 ==e:trojki.append([l4, l5,l6])
+
+                    elif l4 == q and l6 == w and l1 ==e:trojki.append([l4, l6,l1])
+                    elif l4 == q and l6 == w and l2 ==e:trojki.append([l4, l6,l2])
+                    elif l4 == q and l6 == w and l3 ==e:trojki.append([l4, l6,l3])
+                    elif l4 == q and l6 == w and l5 ==e:trojki.append([l4, l6,l5])
+
+                    elif l5 == q and l1 == w and l2 ==e:trojki.append([l5, l1,l2])
+                    elif l5 == q and l1 == w and l3 ==e:trojki.append([l5, l1,l3])
+                    elif l5 == q and l1 == w and l4 ==e:trojki.append([l5, l1,l4])
+                    elif l5 == q and l1 == w and l6 ==e:trojki.append([l5, l1,l6])
+
+                    elif l5 == q and l2 == w and l1 ==e:trojki.append([l5, l2,l1])
+                    elif l5 == q and l2 == w and l3 ==e:trojki.append([l5, l2,l3])
+                    elif l5 == q and l2 == w and l4 ==e:trojki.append([l5, l2,l4])
+                    elif l5 == q and l2 == w and l6 ==e:trojki.append([l5, l2,l6])
+
+                    elif l5 == q and l3 == w and l1 ==e:trojki.append([l5, l3,l1])
+                    elif l5 == q and l3 == w and l2 ==e:trojki.append([l5, l3,l2])
+                    elif l5 == q and l3 == w and l4 ==e:trojki.append([l5, l3,l4])
+                    elif l5 == q and l3 == w and l6 ==e:trojki.append([l5, l3,l6])
+
+                    elif l5 == q and l4 == w and l1 ==e:trojki.append([l5, l4,l1])
+                    elif l5 == q and l4 == w and l2 ==e:trojki.append([l5, l4,l2])
+                    elif l5 == q and l4 == w and l3 ==e:trojki.append([l5, l4,l3])
+                    elif l5 == q and l4 == w and l6 ==e:trojki.append([l5, l4,l6])
+
+                    elif l5 == q and l6 == w and l1 ==e:trojki.append([l5, l6,l1])
+                    elif l5 == q and l6 == w and l2 ==e:trojki.append([l5, l6,l2])
+                    elif l5 == q and l6 == w and l3 ==e:trojki.append([l5, l6,l3])
+                    elif l5 == q and l6 == w and l4 ==e:trojki.append([l5, l6,l4])
+
+                    elif l6 == q and l1 == w and l2 ==e:trojki.append([l6, l1,l2])
+                    elif l6 == q and l1 == w and l3 ==e:trojki.append([l6, l1,l3])
+                    elif l6 == q and l1 == w and l4 ==e:trojki.append([l6, l1,l4])
+                    elif l6 == q and l1 == w and l5 ==e:trojki.append([l6, l1,l5])
+
+                    elif l6 == q and l2 == w and l1 ==e:trojki.append([l6, l2,l1])
+                    elif l6 == q and l2 == w and l3 ==e:trojki.append([l6, l2,l3])
+                    elif l6 == q and l2 == w and l4 ==e:trojki.append([l6, l2,l4])
+                    elif l6 == q and l2 == w and l5 ==e:trojki.append([l6, l2,l5])
+
+                    elif l6 == q and l3 == w and l1 ==e:trojki.append([l6, l3,l1])
+                    elif l6 == q and l3 == w and l2 ==e:trojki.append([l6, l3,l2])
+                    elif l6 == q and l3 == w and l4 ==e:trojki.append([l6, l3,l4])
+                    elif l6 == q and l3 == w and l5 ==e:trojki.append([l6, l3,l5])
+
+                    elif l6 == q and l4 == w and l1 ==e:trojki.append([l6, l4,l1])
+                    elif l6 == q and l4 == w and l2 ==e:trojki.append([l6, l4,l2])
+                    elif l6 == q and l4 == w and l3 ==e:trojki.append([l6, l4,l3])
+                    elif l6 == q and l4 == w and l5 ==e:trojki.append([l6, l4,l5])
+
+                    elif l6 == q and l5 == w and l1 ==e:trojki.append([l6, l5,l1])
+                    elif l6 == q and l5 == w and l2 ==e:trojki.append([l6, l5,l2])
+                    elif l6 == q and l5 == w and l3 ==e:trojki.append([l6, l5,l3])
+                    elif l6 == q and l5 == w and l4 ==e:trojki.append([l4, l5,l4])
+
+        trojki.sort()
+        liczbaTrojek = len(trojki)
+
+        listaT = []
+        for r in range(1, 50):
+            for t in range(1, 50):
+                for y in range(1, 50):
+                    licznik = trojki.count([r, t, y])
+                    listaT.append([licznik, r, t, y])
         
-        print(len(trojki))
+
+        listaT.sort()
+        
+        r = len(listaT)
+        r = r-1
+        t = r-20
+        ypolozenie = 10
+        for i in range(r, t, -1):
+            losowanie = (listaT[r][0])
+            liczbaPara1 = (listaT[r][1])
+            liczbaPara2 = (listaT[r][2])
+            liczbaPara3 = (listaT[r][3])
+            r -= 1
+
+            tk.Label(self.ramka1, text="("+str(liczbaPara1)+" - "+str(liczbaPara2) + " - "+str(liczbaPara3)+")", font=("Arial", 12), bg="#ADD8E6").place(x=40, y=ypolozenie)
+            tk.Label(self.ramka1, text="--- "+str(losowanie)+" razy", font=("Arial", 12), bg="#ADD8E6").place(x=140, y=ypolozenie)
+            ypolozenie += 25
+
+        r = len(listaT)
+        r = r-21
+        t = r-20
+        ypolozenie = 10
+        for i in range(r, t, -1):
+            losowanie = (listaT[r][0])
+            liczbaPara1 = (listaT[r][1])
+            liczbaPara2 = (listaT[r][2])
+            liczbaPara3 = (listaT[r][3])
+            r -= 1
+
+            tk.Label(self.ramka1, text="("+str(liczbaPara1)+" - "+str(liczbaPara2) + " - "+str(liczbaPara3)+")", font=("Arial", 12), bg="#ADD8E6").place(x=240, y=ypolozenie)
+            tk.Label(self.ramka1, text="--- "+str(losowanie)+" razy", font=("Arial", 12), bg="#ADD8E6").place(x=340, y=ypolozenie)
+            ypolozenie += 25
+
+        r = len(listaT)
+        r = r-41
+        t = r-20
+        ypolozenie = 10
+        for i in range(r, t, -1):
+            losowanie = (listaT[r][0])
+            liczbaPara1 = (listaT[r][1])
+            liczbaPara2 = (listaT[r][2])
+            liczbaPara3 = (listaT[r][3])
+            r -= 1
+
+            tk.Label(self.ramka1, text="("+str(liczbaPara1)+" - "+str(liczbaPara2) + " - "+str(liczbaPara3)+")", font=("Arial", 12), bg="#ADD8E6").place(x=440, y=ypolozenie)
+            tk.Label(self.ramka1, text="--- "+str(losowanie)+" razy", font=("Arial", 12), bg="#ADD8E6").place(x=540, y=ypolozenie)
+            ypolozenie += 25
+
+        but = tk.Button(self.ramka1, text="zamknij to okno",
+                        bg="#DC143C", command=self.zamknij_okno)
+        but.place(x=320, y=540)
 
 
 # definicja analizy par
@@ -185,43 +375,38 @@ class Program:
 
             for i in range(1, 50):
                 for j in range(1, 50):
-                    if liczba_1 == i and liczba_2 == j:
-                        pary.append([liczba_1, liczba_2])
-                    elif liczba_1 == i and liczba_3 == j:
-                        pary.append([liczba_1, liczba_3])
-                    elif liczba_1 == i and liczba_4 == j:
-                        pary.append([liczba_1, liczba_4])
-                    elif liczba_1 == i and liczba_5 == j:
-                        pary.append([liczba_1, liczba_5])
-                    elif liczba_1 == i and liczba_6 == j:
-                        pary.append([liczba_1, liczba_6])
-                    elif liczba_2 == i and liczba_3 == j:
-                        pary.append([liczba_2, liczba_3])
-                    elif liczba_2 == i and liczba_4 == j:
-                        pary.append([liczba_2, liczba_4])
-                    elif liczba_2 == i and liczba_5 == j:
-                        pary.append([liczba_2, liczba_5])
-                    elif liczba_2 == i and liczba_6 == j:
-                        pary.append([liczba_2, liczba_6])
-                    elif liczba_3 == i and liczba_4 == j:
-                        pary.append([liczba_3, liczba_4])
-                    elif liczba_3 == i and liczba_5 == j:
-                        pary.append([liczba_3, liczba_5])
-                    elif liczba_3 == i and liczba_6 == j:
-                        pary.append([liczba_3, liczba_6])
-                    elif liczba_4 == i and liczba_5 == j:
-                        pary.append([liczba_4, liczba_5])
-                    elif liczba_4 == i and liczba_6 == j:
-                        pary.append([liczba_4, liczba_6])
-                    elif liczba_5 == i and liczba_6 == j:
-                        pary.append([liczba_5, liczba_6])
+                    if liczba_1 == i and liczba_2 == j: pary.append([liczba_1, liczba_2])
+                    elif liczba_1 == i and liczba_3 == j: pary.append([liczba_1, liczba_3])
+                    elif liczba_1 == i and liczba_4 == j: pary.append([liczba_1, liczba_4])
+                    elif liczba_1 == i and liczba_5 == j:pary.append([liczba_1, liczba_5])
+                    elif liczba_1 == i and liczba_6 == j:pary.append([liczba_1, liczba_6])
+
+                    elif liczba_2 == i and liczba_1 == j:pary.append([liczba_2, liczba_1])
+                    elif liczba_2 == i and liczba_3 == j:pary.append([liczba_2, liczba_3])
+                    elif liczba_2 == i and liczba_4 == j:pary.append([liczba_2, liczba_4])
+                    elif liczba_2 == i and liczba_5 == j:pary.append([liczba_2, liczba_5])
+                    elif liczba_2 == i and liczba_6 == j:pary.append([liczba_2, liczba_6])
+
+                    elif liczba_3 == i and liczba_1 == j:pary.append([liczba_3, liczba_1])
+                    elif liczba_3 == i and liczba_2 == j:pary.append([liczba_3, liczba_2])
+                    elif liczba_3 == i and liczba_4 == j:pary.append([liczba_3, liczba_4])
+                    elif liczba_3 == i and liczba_5 == j:pary.append([liczba_3, liczba_5])
+                    elif liczba_3 == i and liczba_6 == j:pary.append([liczba_3, liczba_6])
+
+                    elif liczba_4 == i and liczba_1 == j:pary.append([liczba_4, liczba_1])
+                    elif liczba_4 == i and liczba_2 == j:pary.append([liczba_4, liczba_2])
+                    elif liczba_4 == i and liczba_3 == j:pary.append([liczba_4, liczba_3])
+                    elif liczba_4 == i and liczba_5 == j:pary.append([liczba_4, liczba_5])
+                    elif liczba_4 == i and liczba_6 == j:pary.append([liczba_4, liczba_6])
+
+                    elif liczba_5 == i and liczba_1 == j:pary.append([liczba_5, liczba_1])
+                    elif liczba_5 == i and liczba_2 == j:pary.append([liczba_5, liczba_2])
+                    elif liczba_5 == i and liczba_3 == j:pary.append([liczba_5, liczba_3])
+                    elif liczba_5 == i and liczba_4 == j:pary.append([liczba_5, liczba_4])
+                    elif liczba_5 == i and liczba_6 == j:pary.append([liczba_5, liczba_6])
 
         pary.sort()
         liczbaPary = len(pary)
-
-        linia1 = tk.Label(self.ramka1, text="Dwadzieścia par najczęściej występujących w losowaniach ("+str(liczbaPary)+" par)", font=(
-            "Arial", 14), bg="#FAFAD2")
-        linia1.place(x=15, y=20)
 
         listaP = []
         for r in range(1, 50):
@@ -233,20 +418,50 @@ class Program:
         r = len(listaP)
         r = r-1
         t = r-20
-        ypolozenie = 50
-        while r > t:
+        ypolozenie = 10
+        for i in range(r,t,-1):
             losowanie = (listaP[r][0])
             liczbaPara1 = (listaP[r][1])
             liczbaPara2 = (listaP[r][2])
             r -= 1
 
-            tk.Label(self.ramka1, text="Para liczb: "+str(liczbaPara1)+" - "+str(liczbaPara2) +
-                     "   wystąpień: "+str(losowanie), font=("Arial", 12), bg="#FAFAD2").place(x=40, y=ypolozenie)
+            tk.Label(self.ramka1, text="("+str(liczbaPara1)+" - "+str(liczbaPara2) +")", font=("Arial", 12), bg="#FAFAD2").place(x=40, y=ypolozenie)
+            tk.Label(self.ramka1, text=" --- "+str(losowanie), font=("Arial", 12), bg="#FAFAD2").place(x=110, y=ypolozenie)
+            ypolozenie += 25
+
+        r = len(listaP)
+        r = r-21
+        t = r-20
+        ypolozenie = 10
+        for i in range(r,t,-1):
+            losowanie = (listaP[r][0])
+            liczbaPara1 = (listaP[r][1])
+            liczbaPara2 = (listaP[r][2])
+            r -= 1
+
+            tk.Label(self.ramka1, text="("+str(liczbaPara1)+" - "+str(liczbaPara2) +")", font=("Arial", 12), bg="#FAFAD2").place(x=240, y=ypolozenie)
+            tk.Label(self.ramka1, text=" --- "+str(losowanie), font=("Arial", 12), bg="#FAFAD2").place(x=310, y=ypolozenie)
+            ypolozenie += 25
+
+        r = len(listaP)
+        r = r-41
+        t = r-20
+        ypolozenie = 10
+        for i in range(r,t,-1):
+            losowanie = (listaP[r][0])
+            liczbaPara1 = (listaP[r][1])
+            liczbaPara2 = (listaP[r][2])
+            r -= 1
+
+            tk.Label(self.ramka1, text="("+str(liczbaPara1)+" - "+str(liczbaPara2) +")", font=("Arial", 12), bg="#FAFAD2").place(x=440, y=ypolozenie)
+            tk.Label(self.ramka1, text=" --- "+str(losowanie), font=("Arial", 12), bg="#FAFAD2").place(x=510, y=ypolozenie)
             ypolozenie += 25
 
         but = tk.Button(self.ramka1, text="zamknij to okno",
                         bg="#DC143C", command=self.zamknij_okno)
-        but.place(x=400, y=500)
+        but.place(x=320, y=530)
+
+
 
 
 # definicja sprawdza powtarzające się liczby
