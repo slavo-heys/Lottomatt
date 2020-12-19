@@ -8,6 +8,8 @@ from PIL import ImageTk, Image
 import time
 from tkinter.messagebox import showinfo
 from operator import itemgetter
+import requests
+import json
 
 # Tworzenie bazy , jeśli nie istnieje
 conn = sqlite3.connect('baza.db')
@@ -69,8 +71,8 @@ class Program:
         linia = tk.Label(self.ramka, text="moja ramka", justify=LEFT)
         linia.place(x=500, y=10)
 
-        but0 = tk.Button(self.ramka, text="Dodaj losowanie",
-                         width=18, command=self.dodaj_losowanie)
+        but0 = tk.Button(self.ramka, text="Ostatnie losowanie",
+                         width=18, command=self.wyniki_losowania)
         but0.place(x=10, y=10)
 
         but1 = tk.Button(self.ramka, text="Dodaj swoje liczby ",
@@ -101,10 +103,84 @@ class Program:
                          bg="#F08080", width=18, command=self.zamknij_program)
         but4.place(x=10, y=540)
 
+# definicja sprawdzania wyników losowania
+    def wyniki_losowania(self):
+        r = requests.get('http://serwis.mobilotto.pl/mapi_v6/index.php?json=getGames')
+
+        html_text: str = r.text
+        json_text: dict = r.json()
+        r.encoding = 'utf-8'
+
+        text = (r.text)
+        wynik = json.loads(text)
+
+        b =(wynik['Lotto'])
+        numerki = (b['numerki'])
+        liczby_p = numerki.split(',')
+        liczby=[]
+        liczby.append(int(liczby_p[0]))
+        liczby.append(int(liczby_p[1]))
+        liczby.append(int(liczby_p[2]))
+        liczby.append(int(liczby_p[3]))
+        liczby.append(int(liczby_p[4]))
+        liczby.append(int(liczby_p[5]))
+        print(liczby)
+
+        liczby.sort()
+
+        nrLosowania = (b['num_losowania'])
+        data = (b['data_losowania'])
+        data=data[0:10]
+
+        conn = sqlite3.connect('baza.db')
+        c = conn.cursor()
+        c.execute("SELECT * FROM lotto")
+        records = c.fetchall()
+        for rec in records:
+            numerLosowania = str(rec[1])
+            dataOstatnia = str(rec[2])
+        conn.close()
+
+        if numerLosowania == nrLosowania or dataOstatnia == data:
+            self.ramka1 = Frame(root,  height=300, width=650, bg="green")
+            self.ramka1.pack(padx=5, pady=5, side=TOP)
+            tk.Label(self.ramka1, text = "Losowanie już istnieje w bazie!", font = ("Arial, 14"), bg = "green", fg = "white").place(x=20, y=20)
+            tk.Label(self.ramka1, text = "Ostatnie wyniki Dużego Lotka: "+str(liczby[0])+" , "+str(liczby[1])+" , "+str(liczby[2])+" , "+str(liczby[3])+" , "+str(liczby[4])+" , "+str(liczby[5]), font=("Arial", 14), fg = "white", bg="green").place(x=80, y = 150)
+            but = tk.Button(self.ramka1, text="zamknij to okno",
+                        bg="#DC143C", command=self.zamknij_okno)
+            but.place(x=260, y=250)
+        else:
+            conn = sqlite3.connect('baza.db')
+            c = conn.cursor()
+            c.execute("INSERT INTO lotto VALUES(NULL, :nr_losowania, :data, :l1, :l2, :l3, :l4, :l5, :l6)",
+                      {
+                          'nr_losowania': nrLosowania,
+                          'data': data,
+                          'l1': liczby[0],
+                          'l2': liczby[1],
+                          'l3': liczby[2],
+                          'l4': liczby[3],
+                          'l5': liczby[4],
+                          'l6': liczby[5]
+                      })
+            conn.commit()
+            conn.close()
+            self.ramka1 = Frame(root,  height=300, width=650, bg="green")
+            self.ramka1.pack(padx=5, pady=5, side=TOP)
+            tk.Label(self.ramka1, text = "Losowanie  zapisane!", font = ("Arial, 14"), bg = "green", fg = "white").place(x=20, y=20)
+            tk.Label(self.ramka1, text = "Ostatnie wyniki Dużego Lotka: "+str(liczby[0])+" , "+str(liczby[1])+" , "+str(liczby[2])+" , "+str(liczby[3])+" , "+str(liczby[4])+" , "+str(liczby[5]), font=("Arial", 14), fg = "white", bg="green").place(x=80, y = 150)
+            but = tk.Button(self.ramka1, text="zamknij to okno",
+                        bg="#DC143C", command=self.zamknij_okno)
+            but.place(x=260, y=250)
+    
+
+
+# definicja analizy czworek
+
     def analiza_czworek(self):
         self.ramka1 = Frame(root,  height=596, width=650, bg="#ADD8E6")
         self.ramka1.pack(padx=5, pady=5, side=RIGHT)
-        czworki=[]
+        czworki = []
 
         conn = sqlite3.connect('baza.db')
         c = conn.cursor()
@@ -132,619 +208,729 @@ class Program:
         for w in range(1, 50):
             for e in range(1, 50):
                 for r in range(1, 50):
-                    for t in range(1,50):
-                        if l1 == w and l2 == e and l3 == r and l4 == t:czworki.append([l1, l2,l3,l4])
-                        elif l1 == w and l2 == e and l3 == r and l5 == t:czworki.append([l1, l2,l3,l5])
-                        elif l1 == w and l2 == e and l3 == r and l6 == t:czworki.append([l1, l2,l3,l6])
-                        elif l1 == w and l2 == e and l4 == r and l3 == t:czworki.append([l1, l2,l4,l3])
-                        elif l1 == w and l2 == e and l4 == r and l5 == t:czworki.append([l1, l2,l4,l5])
-                        elif l1 == w and l2 == e and l4 == r and l6 == t:czworki.append([l1, l2,l4,l6])
-                        elif l1 == w and l2 == e and l5 == r and l3 == t:czworki.append([l1, l2,l5,l3])
-                        elif l1 == w and l2 == e and l5 == r and l4 == t:czworki.append([l1, l2,l5,l4])
-                        elif l1 == w and l2 == e and l5 == r and l6 == t:czworki.append([l1, l2,l5,l6])
-                        elif l1 == w and l2 == e and l6 == r and l3 == t:czworki.append([l1, l2,l6,l3])
-                        elif l1 == w and l2 == e and l6 == r and l4 == t:czworki.append([l1, l2,l6,l4])
-                        elif l1 == w and l2 == e and l6 == r and l5 == t:czworki.append([l1, l2,l6,l5])
-                        elif l1 == w and l3 == e and l2 == r and l4 == t:czworki.append([l1, l3,l2,l4])
-                        elif l1 == w and l3 == e and l2 == r and l5 == t:czworki.append([l1, l3,l2,l5])
-                        elif l1 == w and l3 == e and l2 == r and l6 == t:czworki.append([l1, l3,l2,l6])
-                        elif l1 == w and l3 == e and l4 == r and l2 == t:czworki.append([l1, l3,l4,l2])
-                        elif l1 == w and l3 == e and l4 == r and l5 == t:czworki.append([l1, l3,l4,l5])
-                        elif l1 == w and l3 == e and l4 == r and l6 == t:czworki.append([l1, l3,l4,l6])
-                        elif l1 == w and l3 == e and l5 == r and l2 == t:czworki.append([l1, l3,l5,l2])
-                        elif l1 == w and l3 == e and l5 == r and l4 == t:czworki.append([l1, l3,l5,l4])
-                        elif l1 == w and l3 == e and l5 == r and l6 == t:czworki.append([l1, l3,l5,l6])
-                        elif l1 == w and l3 == e and l6 == r and l2 == t:czworki.append([l1, l3,l6,l2])
-                        elif l1 == w and l3 == e and l6 == r and l4 == t:czworki.append([l1, l3,l6,l4])
-                        elif l1 == w and l3 == e and l6 == r and l5 == t:czworki.append([l1, l3,l6,l5])
-                        elif l1 == w and l4 == e and l2 == r and l3 == t:czworki.append([l1, l4,l2,l3])
-                        elif l1 == w and l4 == e and l2 == r and l5 == t:czworki.append([l1, l4,l2,l5])
-                        elif l1 == w and l4 == e and l2 == r and l6 == t:czworki.append([l1, l4,l2,l6])
-                        elif l1 == w and l4 == e and l3 == r and l2 == t:czworki.append([l1, l4,l3,l2])
-                        elif l1 == w and l4 == e and l3 == r and l5 == t:czworki.append([l1, l4,l3,l5])
-                        elif l1 == w and l4 == e and l3 == r and l6 == t:czworki.append([l1, l4,l3,l6])
-
-                        elif l1 == w and l4 == e and l5 == r and l2 == t:czworki.append([l1, l4,l5,l2])
-                        elif l1 == w and l4 == e and l5 == r and l3 == t:czworki.append([l1, l4,l5,l3])
-
-
-                        elif l1 == w and l4 == e and l5 == r and l6 == t:czworki.append([l1, l4,l5,l6])
-
-                        elif l1 == w and l4 == e and l6 == r and l2 == t:czworki.append([l1, l4,l6,l2])
-                        elif l1 == w and l4 == e and l6 == r and l3 == t:czworki.append([l1, l4,l6,l3])
-
-                        elif l1 == w and l4 == e and l6 == r and l5 == t:czworki.append([l1, l4,l6,l5])
-
-                        elif l1 == w and l5 == e and l2 == r and l3 == t:czworki.append([l1, l5,l2,l3])
-                        elif l1 == w and l5 == e and l2 == r and l4 == t:czworki.append([l1, l5,l2,l4])
-
-                        elif l1 == w and l5 == e and l2 == r and l6 == t:czworki.append([l1, l5,l2,l6])
-
-                        elif l1 == w and l5 == e and l3 == r and l2 == t:czworki.append([l1, l5,l3,l2])
-
-                        elif l1 == w and l5 == e and l3 == r and l4 == t:czworki.append([l1, l5,l3,l4])
-
-                        elif l1 == w and l5 == e and l3 == r and l6 == t:czworki.append([l1, l5,l3,l6])
-
-                        elif l1 == w and l5 == e and l4 == r and l2 == t:czworki.append([l1, l5,l4,l2])
-                        elif l1 == w and l5 == e and l4 == r and l3 == t:czworki.append([l1, l5,l4,l3])
-
-
-                        elif l1 == w and l5 == e and l4 == r and l6 == t:czworki.append([l1, l5,l4,l6])
-                        elif l1 == w and l5 == e and l6 == r and l2 == t:czworki.append([l1, l5,l6,l2])
-                        elif l1 == w and l5 == e and l6 == r and l3 == t:czworki.append([l1, l5,l6,l3])
-                        elif l1 == w and l5 == e and l6 == r and l4 == t:czworki.append([l1, l5,l6,l4])
-                        elif l1 == w and l6 == e and l2 == r and l3 == t:czworki.append([l1, l6,l2,l3])
-                        elif l1 == w and l6 == e and l2 == r and l4 == t:czworki.append([l1, l6,l2,l4])
-                        elif l1 == w and l6 == e and l2 == r and l5 == t:czworki.append([l1, l6,l2,l5])
-
-
-                        elif l1 == w and l6 == e and l3 == r and l2 == t:czworki.append([l1, l6,l3,l2])
-
-                        elif l1 == w and l6 == e and l3 == r and l4 == t:czworki.append([l1, l6,l3,l4])
-                        elif l1 == w and l6 == e and l3 == r and l5 == t:czworki.append([l1, l6,l3,l5])
-
-
-                        elif l1 == w and l6 == e and l4 == r and l2 == t:czworki.append([l1, l6,l4,l2])
-                        elif l1 == w and l6 == e and l4 == r and l3 == t:czworki.append([l1, l6,l4,l3])
-
-                        elif l1 == w and l6 == e and l4 == r and l5 == t:czworki.append([l1, l6,l4,l5])
-
-
-                        elif l1 == w and l6 == e and l5 == r and l2 == t:czworki.append([l1, l6,l5,l2])
-                        elif l1 == w and l6 == e and l5 == r and l3 == t:czworki.append([l1, l6,l5,l3])
-                        elif l1 == w and l6 == e and l5 == r and l4 == t:czworki.append([l1, l6,l5,l4])
-                        elif l2 == w and l1 == e and l3 == r and l4 == t:czworki.append([l2, l1,l3,l4])
-                        elif l2 == w and l1 == e and l3 == r and l5 == t:czworki.append([l2, l1,l3,l5])
-                        elif l2 == w and l1 == e and l3 == r and l6 == t:czworki.append([l2, l1,l3,l6])
-
-
-                        elif l2 == w and l1 == e and l4 == r and l3 == t:czworki.append([l2, l1,l4,l3])
-
-                        elif l2 == w and l1 == e and l4 == r and l5 == t:czworki.append([l2, l1,l4,l5])
-                        elif l2 == w and l1 == e and l4 == r and l6 == t:czworki.append([l2, l1,l4,l6])
-
-
-                        elif l2 == w and l1 == e and l5 == r and l3 == t:czworki.append([l2, l1,l5,l3])
-                        elif l2 == w and l1 == e and l5 == r and l4 == t:czworki.append([l2, l1,l5,l4])
-
-                        elif l2 == w and l1 == e and l5 == r and l6 == t:czworki.append([l2, l1,l5,l6])
-
-
-                        elif l2 == w and l1 == e and l6 == r and l3 == t:czworki.append([l2, l1,l6,l3])
-                        elif l2 == w and l1 == e and l6 == r and l4 == t:czworki.append([l2, l1,l6,l4])
-                        elif l2 == w and l1 == e and l6 == r and l5 == t:czworki.append([l2, l1,l6,l5])
-
-                        elif l2 == w and l3 == e and l1 == r and l4 == t:czworki.append([l2, l3,l1,l4])
-                        elif l2 == w and l3 == e and l1 == r and l5 == t:czworki.append([l2, l3,l1,l5])
-                        elif l2 == w and l3 == e and l1 == r and l6 == t:czworki.append([l2, l3,l1,l6])
-                        elif l2 == w and l3 == e and l4 == r and l1 == t:czworki.append([l2, l3,l4,l1])
-
-
-
-                        elif l2 == w and l3 == e and l4 == r and l5 == t:czworki.append([l2, l3,l4,l5])
-                        elif l2 == w and l3 == e and l4 == r and l6 == t:czworki.append([l2, l3,l4,l6])
-                        elif l2 == w and l3 == e and l5 == r and l1 == t:czworki.append([l2, l3,l5,l1])
-
-
-                        elif l2 == w and l3 == e and l5 == r and l4 == t:czworki.append([l2, l3,l5,l4])
-
-                        elif l2 == w and l3 == e and l5 == r and l6 == t:czworki.append([l2, l3,l5,l6])
-                        elif l2 == w and l3 == e and l6 == r and l1 == t:czworki.append([l2, l3,l6,l1])
-
-
-                        elif l2 == w and l3 == e and l6 == r and l4 == t:czworki.append([l2, l3,l6,l4])
-                        elif l2 == w and l3 == e and l6 == r and l5 == t:czworki.append([l2, l3,l6,l5])
-
-
-
-                        elif l2 == w and l4 == e and l1 == r and l3 == t:czworki.append([l2, l4,l1,l3])
-
-                        elif l2 == w and l4 == e and l1 == r and l5 == t:czworki.append([l2, l4,l1,l5])
-                        elif l2 == w and l4 == e and l1 == r and l6 == t:czworki.append([l2, l4,l1,l6])
-                        elif l2 == w and l4 == e and l3 == r and l1 == t:czworki.append([l2, l4,l3,l1])
-
-
-
-                        elif l2 == w and l4 == e and l3 == r and l5 == t:czworki.append([l2, l4,l3,l5])
-                        elif l2 == w and l4 == e and l3 == r and l6 == t:czworki.append([l2, l4,l3,l6])
-                        elif l2 == w and l4 == e and l5 == r and l1 == t:czworki.append([l2, l4,l5,l1])
-
-                        elif l2 == w and l4 == e and l5 == r and l3 == t:czworki.append([l2, l4,l5,l3])
-
-
-                        elif l2 == w and l4 == e and l5 == r and l6 == t:czworki.append([l2, l4,l5,l6])
-                        elif l2 == w and l4 == e and l6 == r and l1 == t:czworki.append([l2, l4,l6,l1])
-
-                        elif l2 == w and l4 == e and l6 == r and l3 == t:czworki.append([l2, l4,l6,l3])
-
-                        elif l2 == w and l4 == e and l6 == r and l5 == t:czworki.append([l2, l4,l6,l5])
-
-
-
-                        elif l2 == w and l5 == e and l1 == r and l3 == t:czworki.append([l2, l5,l1,l3])
-                        elif l2 == w and l5 == e and l1 == r and l4 == t:czworki.append([l2, l5,l1,l4])
-
-                        elif l2 == w and l5 == e and l1 == r and l6 == t:czworki.append([l2, l5,l1,l6])
-
-                        elif l2 == w and l5 == e and l3 == r and l1 == t:czworki.append([l2, l5,l3,l1])
-
-
-                        elif l2 == w and l5 == e and l3 == r and l4 == t:czworki.append([l2, l5,l3,l4])
-
-                        elif l2 == w and l5 == e and l3 == r and l6 == t:czworki.append([l2, l5,l3,l6])
-                        elif l2 == w and l5 == e and l4 == r and l1 == t:czworki.append([l2, l5,l4,l1])
-
-                        elif l2 == w and l5 == e and l4 == r and l3 == t:czworki.append([l2, l5,l4,l3])
-
-
-                        elif l2 == w and l5 == e and l4 == r and l6 == t:czworki.append([l2, l5,l4,l6])
-
-                        elif l2 == w and l5 == e and l6 == r and l1 == t:czworki.append([l2, l5,l6,l1])
-
-                        elif l2 == w and l5 == e and l6 == r and l3 == t:czworki.append([l2, l5,l6,l3])
-                        elif l2 == w and l5 == e and l6 == r and l4 == t:czworki.append([l2, l5,l6,l4])
-
-                        elif l2 == w and l6 == e and l1 == r and l3 == t:czworki.append([l2, l6,l1,l3])
-                        elif l2 == w and l6 == e and l1 == r and l4 == t:czworki.append([l2, l6,l1,l4])
-                        elif l2 == w and l6 == e and l1 == r and l5 == t:czworki.append([l2, l6,l1,l5])
-                        elif l2 == w and l6 == e and l3 == r and l1 == t:czworki.append([l2, l6,l3,l1])
-
-
-                        elif l2 == w and l6 == e and l3 == r and l4 == t:czworki.append([l2, l6,l3,l4])
-                        elif l2 == w and l6 == e and l3 == r and l5 == t:czworki.append([l2, l6,l3,l5])
-
-                        elif l2 == w and l6 == e and l4 == r and l1 == t:czworki.append([l2, l6,l4,l1])
-
-                        elif l2 == w and l6 == e and l4 == r and l3 == t:czworki.append([l2, l6,l4,l3])
-
-                        elif l2 == w and l6 == e and l4 == r and l5 == t:czworki.append([l2, l6,l4,l5])
-
-                        elif l2 == w and l6 == e and l5 == r and l1 == t:czworki.append([l2, l6,l5,l1])
-
-                        elif l2 == w and l6 == e and l5 == r and l3 == t:czworki.append([l2, l6,l5,l3])
-                        elif l2 == w and l6 == e and l5 == r and l4 == t:czworki.append([l2, l6,l5,l4])
-                        elif l3 == w and l1 == e and l2 == r and l4 == t:czworki.append([l3, l1,l2,l4])
-                        elif l3 == w and l1 == e and l2 == r and l5 == t:czworki.append([l3, l1,l2,l5])
-                        elif l3 == w and l1 == e and l2 == r and l6 == t:czworki.append([l3, l1,l2,l6])
-
-                        elif l3 == w and l1 == e and l4 == r and l2 == t:czworki.append([l3, l1,l4,l2])
-
-
-                        elif l3 == w and l1 == e and l4 == r and l5 == t:czworki.append([l3, l1,l4,l5])
-                        elif l3 == w and l1 == e and l4 == r and l6 == t:czworki.append([l3, l1,l4,l6])
-
-                        elif l3 == w and l1 == e and l5 == r and l2 == t:czworki.append([l3, l1,l5,l2])
-
-                        elif l3 == w and l1 == e and l5 == r and l4 == t:czworki.append([l3, l1,l5,l4])
-
-                        elif l3 == w and l1 == e and l5 == r and l6 == t:czworki.append([l3, l1,l5,l6])
-
-                        elif l3 == w and l1 == e and l6 == r and l2 == t:czworki.append([l3, l1,l6,l2])
-
-                        elif l3 == w and l1 == e and l6 == r and l4 == t:czworki.append([l3, l1,l6,l4])
-                        elif l3 == w and l1 == e and l6 == r and l5 == t:czworki.append([l3, l1,l6,l5])
-
-
-
-
-                        elif l3 == w and l2 == e and l1 == r and l4 == t:czworki.append([l3, l2,l1,l4])
-                        elif l3 == w and l2 == e and l1 == r and l5 == t:czworki.append([l3, l2,l1,l5])
-                        elif l3 == w and l2 == e and l1 == r and l6 == t:czworki.append([l3, l2,l1,l6])
-
-                        elif l3 == w and l2 == e and l4 == r and l1 == t:czworki.append([l3, l2,l4,l1])
-
-                        elif l3 == w and l2 == e and l4 == r and l5 == t:czworki.append([l3, l2,l4,l5])
-                        elif l3 == w and l2 == e and l4 == r and l6 == t:czworki.append([l3, l2,l4,l6])
-                        elif l3 == w and l2 == e and l5 == r and l1 == t:czworki.append([l3, l2,l5,l1])
-
-
-                        elif l3 == w and l2 == e and l5 == r and l4 == t:czworki.append([l3, l2,l5,l4])
-
-                        elif l3 == w and l2 == e and l5 == r and l6 == t:czworki.append([l3, l2,l5,l6])
-                        elif l3 == w and l2 == e and l6 == r and l1 == t:czworki.append([l3, l2,l6,l1])
-
-
-                        elif l3 == w and l2 == e and l6 == r and l4 == t:czworki.append([l3, l2,l6,l4])
-                        elif l3 == w and l2 == e and l6 == r and l5 == t:czworki.append([l3, l2,l6,l5])
-
-                        elif l3 == w and l4 == e and l1 == r and l2 == t:czworki.append([l3, l4,l1,l2])
-
-
-                        elif l3 == w and l4 == e and l1 == r and l5 == t:czworki.append([l3, l4,l1,l5])
-                        elif l3 == w and l4 == e and l1 == r and l6 == t:czworki.append([l3, l4,l1,l6])
-                        elif l3 == w and l4 == e and l2 == r and l1 == t:czworki.append([l3, l4,l2,l1])
-
-
-
-                        elif l3 == w and l4 == e and l2 == r and l5 == t:czworki.append([l3, l4,l2,l5])
-                        elif l3 == w and l4 == e and l2 == r and l6 == t:czworki.append([l3, l4,l2,l6])
-                        elif l3 == w and l4 == e and l5 == r and l1 == t:czworki.append([l3, l4,l5,l1])
-                        elif l3 == w and l4 == e and l5 == r and l2 == t:czworki.append([l3, l4,l5,l2])
-
-
-
-                        elif l3 == w and l4 == e and l5 == r and l6 == t:czworki.append([l3, l4,l5,l6])
-                        elif l3 == w and l4 == e and l6 == r and l1 == t:czworki.append([l3, l4,l6,l1])
-                        elif l3 == w and l4 == e and l6 == r and l2 == t:czworki.append([l3, l4,l6,l2])
-
-
-                        elif l3 == w and l4 == e and l6 == r and l5 == t:czworki.append([l3, l4,l6,l5])
-
-
-                        elif l3 == w and l5 == e and l1 == r and l2 == t:czworki.append([l3, l5,l1,l2])
-
-                        elif l3 == w and l5 == e and l1 == r and l4 == t:czworki.append([l3, l5,l1,l4])
-
-                        elif l3 == w and l5 == e and l1 == r and l6 == t:czworki.append([l3, l5,l1,l6])
-                        elif l3 == w and l5 == e and l2 == r and l1 == t:czworki.append([l3, l5,l2,l1])
-
-
-                        elif l3 == w and l5 == e and l2 == r and l4 == t:czworki.append([l3, l5,l2,l4])
-
-                        elif l3 == w and l5 == e and l2 == r and l6 == t:czworki.append([l3, l5,l2,l6])
-
-                        elif l3 == w and l5 == e and l4 == r and l1 == t:czworki.append([l3, l5,l4,l1])
-                        elif l3 == w and l5 == e and l4 == r and l2 == t:czworki.append([l3, l5,l4,l2])
-                        elif l3 == w and l5 == e and l4 == r and l6 == t:czworki.append([l3, l5,l4,l6])
-
-                        elif l3 == w and l5 == e and l6 == r and l1 == t:czworki.append([l3, l5,l6,l1])
-                        elif l3 == w and l5 == e and l6 == r and l2 == t:czworki.append([l3, l5,l6,l2])
-
-                        elif l3 == w and l5 == e and l6 == r and l4 == t:czworki.append([l3, l5,l6,l4])
-
-                        elif l3 == w and l6 == e and l1 == r and l2 == t:czworki.append([l3, l6,l1,l2])
-
-                        elif l3 == w and l6 == e and l1 == r and l4 == t:czworki.append([l3, l6,l1,l4])
-                        elif l3 == w and l6 == e and l1 == r and l5 == t:czworki.append([l3, l6,l1,l5])
-
-                        elif l3 == w and l6 == e and l2 == r and l1 == t:czworki.append([l3, l6,l2,l1])
-
-
-                        elif l3 == w and l6 == e and l2 == r and l4 == t:czworki.append([l3, l6,l2,l4])
-                        elif l3 == w and l6 == e and l2 == r and l5 == t:czworki.append([l3, l6,l2,l5])
-
-                        elif l3 == w and l6 == e and l4 == r and l1 == t:czworki.append([l3, l6,l4,l1])
-                        elif l3 == w and l6 == e and l4 == r and l2 == t:czworki.append([l3, l6,l4,l2])
-
-
-                        elif l3 == w and l6 == e and l4 == r and l5 == t:czworki.append([l3, l6,l4,l5])
-
-                        elif l3 == w and l6 == e and l5 == r and l1 == t:czworki.append([l3, l6,l5,l1])
-                        elif l3 == w and l6 == e and l5 == r and l2 == t:czworki.append([l3, l6,l5,l2])
-
-                        elif l3 == w and l6 == e and l5 == r and l4 == t:czworki.append([l3, l6,l5,l4])
-                        elif l4 == w and l1 == e and l2 == r and l3 == t:czworki.append([l4, l1,l2,l3])
-
-                        elif l4 == w and l1 == e and l2 == r and l5 == t:czworki.append([l4, l1,l2,l5])
-                        elif l4 == w and l1 == e and l2 == r and l6 == t:czworki.append([l4, l1,l2,l6])
-
-                        elif l4 == w and l1 == e and l3 == r and l2 == t:czworki.append([l4, l1,l3,l2])
-
-
-                        elif l4 == w and l1 == e and l3 == r and l5 == t:czworki.append([l4, l1,l3,l5])
-                        elif l4 == w and l1 == e and l3 == r and l6 == t:czworki.append([l4, l1,l3,l6])
-                        elif l4 == w and l1 == e and l5 == r and l2 == t:czworki.append([l4, l1,l5,l2])
-                        elif l4 == w and l1 == e and l5 == r and l3 == t:czworki.append([l4, l1,l5,l3])
-
-
-                        elif l4 == w and l1 == e and l5 == r and l6 == t:czworki.append([l4, l1,l5,l6])
-
-                        elif l4 == w and l1 == e and l6 == r and l2 == t:czworki.append([l4, l1,l6,l2])
-                        elif l4 == w and l1 == e and l6 == r and l3 == t:czworki.append([l4, l1,l6,l3])
-
-                        elif l4 == w and l1 == e and l6 == r and l5 == t:czworki.append([l4, l1,l6,l5])
-                        elif l4 == w and l2 == e and l1 == r and l3 == t:czworki.append([l4, l2,l1,l3])
-
-                        elif l4 == w and l2 == e and l1 == r and l5 == t:czworki.append([l4, l2,l1,l5])
-                        elif l4 == w and l2 == e and l1 == r and l6 == t:czworki.append([l4, l2,l1,l6])
-                        elif l4 == w and l2 == e and l3 == r and l1 == t:czworki.append([l4, l2,l3,l1])
-                        elif l4 == w and l2 == e and l3 == r and l5 == t:czworki.append([l4, l2,l3,l5])
-                        elif l4 == w and l2 == e and l3 == r and l6 == t:czworki.append([l4, l2,l3,l6])
-                        elif l4 == w and l2 == e and l5 == r and l1 == t:czworki.append([l4, l2,l5,l1])
-
-                        elif l4 == w and l2 == e and l5 == r and l3 == t:czworki.append([l4, l2,l5,l3])
-
-
-                        elif l4 == w and l2 == e and l5 == r and l6 == t:czworki.append([l4, l2,l5,l6])
-                        elif l4 == w and l2 == e and l6 == r and l1 == t:czworki.append([l4, l2,l6,l1])
-
-                        elif l4 == w and l2 == e and l6 == r and l3 == t:czworki.append([l4, l2,l6,l3])
-
-                        elif l4 == w and l2 == e and l6 == r and l5 == t:czworki.append([l4, l2,l6,l5])
-
-
-                        elif l4 == w and l3 == e and l1 == r and l2 == t:czworki.append([l4, l3,l1,l2])
-
-
-                        elif l4 == w and l3 == e and l1 == r and l5 == t:czworki.append([l4, l3,l1,l5])
-                        elif l4 == w and l3 == e and l1 == r and l6 == t:czworki.append([l4, l3,l1,l6])
-                        elif l4 == w and l3 == e and l2 == r and l1 == t:czworki.append([l4, l3,l2,l1])
-                        elif l4 == w and l3 == e and l2 == r and l5 == t:czworki.append([l4, l3,l2,l5])
-                        elif l4 == w and l3 == e and l2 == r and l6 == t:czworki.append([l4, l3,l2,l6])
-                        elif l4 == w and l3 == e and l5 == r and l1 == t:czworki.append([l4, l3,l5,l1])
-                        elif l4 == w and l3 == e and l5 == r and l2 == t:czworki.append([l4, l3,l5,l2])
-                        elif l4 == w and l3 == e and l5 == r and l6 == t:czworki.append([l4, l3,l5,l6])
-                        elif l4 == w and l3 == e and l6 == r and l1 == t:czworki.append([l4, l3,l6,l1])
-                        elif l4 == w and l3 == e and l6 == r and l2 == t:czworki.append([l4, l3,l6,l2])
-
-
-                        elif l4 == w and l3 == e and l6 == r and l5 == t:czworki.append([l4, l3,l6,l5])
-                        elif l4 == w and l5 == e and l1 == r and l2 == t:czworki.append([l4, l5,l1,l2])
-                        elif l4 == w and l5 == e and l1 == r and l3 == t:czworki.append([l4, l5,l1,l3])
-
-
-                        elif l4 == w and l5 == e and l1 == r and l6 == t:czworki.append([l4, l5,l1,l6])
-                        elif l4 == w and l5 == e and l2 == r and l1 == t:czworki.append([l4, l5,l2,l1])
-
-                        elif l4 == w and l5 == e and l2 == r and l3 == t:czworki.append([l4, l5,l2,l3])
-
-
-                        elif l4 == w and l5 == e and l2 == r and l6 == t:czworki.append([l4, l5,l2,l6])
-                        elif l4 == w and l5 == e and l3 == r and l1 == t:czworki.append([l4, l5,l3,l1])
-                        elif l4 == w and l5 == e and l3 == r and l2 == t:czworki.append([l4, l5,l3,l2])
-                        elif l4 == w and l5 == e and l3 == r and l6 == t:czworki.append([l4, l5,l3,l6])
-                        elif l4 == w and l5 == e and l6 == r and l1 == t:czworki.append([l4, l5,l6,l1])
-                        elif l4 == w and l5 == e and l6 == r and l2 == t:czworki.append([l4, l5,l6,l2])
-                        elif l4 == w and l5 == e and l6 == r and l3 == t:czworki.append([l4, l5,l6,l3])
-                        elif l4 == w and l6 == e and l1 == r and l2 == t:czworki.append([l4, l6,l1,l2])
-                        elif l4 == w and l6 == e and l1 == r and l3 == t:czworki.append([l4, l6,l1,l3])
-
-                        elif l4 == w and l6 == e and l1 == r and l5 == t:czworki.append([l4, l6,l1,l5])
-
-                        elif l4 == w and l6 == e and l2 == r and l1 == t:czworki.append([l4, l6,l2,l1])
-
-                        elif l4 == w and l6 == e and l2 == r and l3 == t:czworki.append([l4, l6,l2,l3])
-
-                        elif l4 == w and l6 == e and l2 == r and l5 == t:czworki.append([l4, l6,l2,l5])
-
-                        elif l4 == w and l6 == e and l3 == r and l1 == t:czworki.append([l4, l6,l3,l1])
-                        elif l4 == w and l6 == e and l3 == r and l2 == t:czworki.append([l4, l6,l3,l2])
-
-
-                        elif l4 == w and l6 == e and l3 == r and l5 == t:czworki.append([l4, l6,l3,l5])
-
-                        elif l4 == w and l6 == e and l5 == r and l1 == t:czworki.append([l4, l6,l5,l1])
-                        elif l4 == w and l6 == e and l5 == r and l2 == t:czworki.append([l4, l6,l5,l2])
-                        elif l4 == w and l6 == e and l5 == r and l3 == t:czworki.append([l4, l6,l5,l3])
-
-                        elif l5 == w and l1 == e and l2 == r and l3 == t:czworki.append([l5, l1,l2,l3])
-                        elif l5 == w and l1 == e and l2 == r and l4 == t:czworki.append([l5, l1,l2,l4])
-
-                        elif l5 == w and l1 == e and l2 == r and l6 == t:czworki.append([l5, l1,l2,l6])
-
-                        elif l5 == w and l1 == e and l3 == r and l2 == t:czworki.append([l5, l1,l3,l2])
-
-                        elif l5 == w and l1 == e and l3 == r and l4 == t:czworki.append([l5, l1,l3,l4])
-
-                        elif l5 == w and l1 == e and l3 == r and l6 == t:czworki.append([l5, l1,l3,l6])
-
-                        elif l5 == w and l1 == e and l4 == r and l2 == t:czworki.append([l5, l1,l4,l2])
-                        elif l5 == w and l1 == e and l4 == r and l3 == t:czworki.append([l5, l1,l4,l3])
-
-
-                        elif l5 == w and l1 == e and l4 == r and l6 == t:czworki.append([l5, l1,l4,l6])
-
-                        elif l5 == w and l1 == e and l6 == r and l2 == t:czworki.append([l5, l1,l6,l2])
-                        elif l5 == w and l1 == e and l6 == r and l3 == t:czworki.append([l5, l1,l6,l3])
-                        elif l5 == w and l1 == e and l6 == r and l4 == t:czworki.append([l5, l1,l6,l4])
-
-                        elif l5 == w and l2 == e and l1 == r and l3 == t:czworki.append([l5, l2,l1,l3])
-                        elif l5 == w and l2 == e and l1 == r and l4 == t:czworki.append([l5, l2,l1,l4])
-
-                        elif l5 == w and l2 == e and l1 == r and l6 == t:czworki.append([l5, l2,l1,l6])
-
-                        elif l5 == w and l2 == e and l3 == r and l1 == t:czworki.append([l5, l2,l3,l1])
-
-
-                        elif l5 == w and l2 == e and l3 == r and l4 == t:czworki.append([l5, l2,l3,l4])
-
-                        elif l5 == w and l2 == e and l3 == r and l6 == t:czworki.append([l5, l2,l3,l6])
-                        elif l5 == w and l2 == e and l4 == r and l1 == t:czworki.append([l5, l2,l4,l1])
-
-                        elif l5 == w and l2 == e and l4 == r and l3 == t:czworki.append([l5, l2,l4,l3])
-
-
-                        elif l5 == w and l2 == e and l4 == r and l6 == t:czworki.append([l5, l2,l4,l6])
-
-                        elif l5 == w and l2 == e and l6 == r and l1 == t:czworki.append([l5, l2,l6,l1])
-
-                        elif l5 == w and l2 == e and l6 == r and l3 == t:czworki.append([l5, l2,l6,l3])
-                        elif l5 == w and l2 == e and l6 == r and l4 == t:czworki.append([l5, l2,l6,l4])
-
-
-
-                        elif l5 == w and l3 == e and l1 == r and l2 == t:czworki.append([l5, l3,l1,l2])
-
-                        elif l5 == w and l3 == e and l1 == r and l4 == t:czworki.append([l5, l3,l1,l4])
-
-                        elif l5 == w and l3 == e and l1 == r and l6 == t:czworki.append([l5, l3,l1,l6])
-                        elif l5 == w and l3 == e and l2 == r and l1 == t:czworki.append([l5, l3,l2,l1])
-
-
-                        elif l5 == w and l3 == e and l2 == r and l4 == t:czworki.append([l5, l3,l2,l4])
-
-                        elif l5 == w and l3 == e and l2 == r and l6 == t:czworki.append([l5, l3,l2,l6])
-
-                        elif l5 == w and l3 == e and l4 == r and l1 == t:czworki.append([l5, l3,l4,l1])
-                        elif l5 == w and l3 == e and l4 == r and l2 == t:czworki.append([l5, l3,l4,l2])
-
-                        elif l5 == w and l3 == e and l4 == r and l6 == t:czworki.append([l5, l3,l4,l6])
-
-                        elif l5 == w and l3 == e and l6 == r and l1 == t:czworki.append([l5, l3,l6,l1])
-                        elif l5 == w and l3 == e and l6 == r and l2 == t:czworki.append([l5, l3,l6,l2])
-
-                        elif l5 == w and l3 == e and l6 == r and l4 == t:czworki.append([l5, l3,l6,l4])
-
-
-
-                        elif l5 == w and l4 == e and l1 == r and l2 == t:czworki.append([l5, l4,l1,l2])
-                        elif l5 == w and l4 == e and l1 == r and l3 == t:czworki.append([l5, l4,l1,l3])
-
-
-                        elif l5 == w and l4 == e and l1 == r and l6 == t:czworki.append([l5, l4,l1,l6])
-                        elif l5 == w and l4 == e and l2 == r and l1 == t:czworki.append([l5, l4,l2,l1])
-
-                        elif l5 == w and l4 == e and l2 == r and l3 == t:czworki.append([l5, l4,l2,l3])
-
-
-                        elif l5 == w and l4 == e and l2 == r and l6 == t:czworki.append([l5, l4,l2,l6])
-                        elif l5 == w and l4 == e and l3 == r and l1 == t:czworki.append([l5, l4,l3,l1])
-                        elif l5 == w and l4 == e and l3 == r and l2 == t:czworki.append([l5, l4,l3,l2])
-
-                        elif l5 == w and l4 == e and l3 == r and l6 == t:czworki.append([l5, l4,l3,l6])
-
-                        elif l5 == w and l4 == e and l6 == r and l1 == t:czworki.append([l5, l4,l6,l1])
-                        elif l5 == w and l4 == e and l6 == r and l2 == t:czworki.append([l5, l4,l6,l2])
-                        elif l5 == w and l4 == e and l6 == r and l3 == t:czworki.append([l5, l4,l6,l3])
-
-                        elif l5 == w and l6 == e and l1 == r and l2 == t:czworki.append([l5, l6,l1,l2])
-                        elif l5 == w and l6 == e and l1 == r and l3 == t:czworki.append([l5, l6,l1,l3])
-                        elif l5 == w and l6 == e and l1 == r and l4 == t:czworki.append([l5, l6,l1,l4])
-
-
-                        elif l5 == w and l6 == e and l2 == r and l1 == t:czworki.append([l5, l6,l2,l1])
-
-                        elif l5 == w and l6 == e and l2 == r and l3 == t:czworki.append([l5, l6,l2,l3])
-                        elif l5 == w and l6 == e and l2 == r and l4 == t:czworki.append([l5, l6,l2,l4])
-
-
-                        elif l5 == w and l6 == e and l3 == r and l1 == t:czworki.append([l5, l6,l3,l1])
-                        elif l5 == w and l6 == e and l3 == r and l2 == t:czworki.append([l5, l6,l3,l2])
-
-                        elif l5 == w and l6 == e and l3 == r and l4 == t:czworki.append([l5, l6,l3,l4])
-
-
-                        elif l5 == w and l6 == e and l4 == r and l1 == t:czworki.append([l5, l6,l4,l1])
-                        elif l5 == w and l6 == e and l4 == r and l2 == t:czworki.append([l5, l6,l4,l2])
-                        elif l5 == w and l6 == e and l4 == r and l3 == t:czworki.append([l5, l6,l4,l3])
-
-                        elif l6 == w and l1 == e and l2 == r and l3 == t:czworki.append([l6, l1,l2,l3])
-                        elif l6 == w and l1 == e and l2 == r and l4 == t:czworki.append([l6, l1,l2,l4])
-                        elif l6 == w and l1 == e and l2 == r and l5 == t:czworki.append([l6, l1,l2,l5])
-
-
-                        elif l6 == w and l1 == e and l3 == r and l2 == t:czworki.append([l6, l1,l3,l2])
-
-                        elif l6 == w and l1 == e and l3 == r and l4 == t:czworki.append([l6, l1,l3,l4])
-                        elif l6 == w and l1 == e and l3 == r and l5 == t:czworki.append([l6, l1,l3,l5])
-
-
-                        elif l6 == w and l1 == e and l4 == r and l2 == t:czworki.append([l6, l1,l4,l2])
-                        elif l6 == w and l1 == e and l4 == r and l3 == t:czworki.append([l6, l1,l4,l3])
-
-                        elif l6 == w and l1 == e and l4 == r and l5 == t:czworki.append([l6, l1,l4,l5])
-
-
-                        elif l6 == w and l1 == e and l5 == r and l2 == t:czworki.append([l6, l1,l5,l2])
-                        elif l6 == w and l1 == e and l5 == r and l3 == t:czworki.append([l6, l1,l5,l3])
-                        elif l6 == w and l1 == e and l5 == r and l4 == t:czworki.append([l6, l1,l5,l4])
-
-                        elif l6 == w and l2 == e and l1 == r and l3 == t:czworki.append([l6, l2,l1,l3])
-                        elif l6 == w and l2 == e and l1 == r and l4 == t:czworki.append([l6, l2,l1,l4])
-                        elif l6 == w and l2 == e and l1 == r and l5 == t:czworki.append([l6, l2,l1,l5])
-
-                        elif l6 == w and l2 == e and l3 == r and l1 == t:czworki.append([l6, l2,l3,l1])
-
-
-                        elif l6 == w and l2 == e and l3 == r and l4 == t:czworki.append([l6, l2,l3,l4])
-                        elif l6 == w and l2 == e and l3 == r and l5 == t:czworki.append([l6, l2,l3,l5])
-
-                        elif l6 == w and l2 == e and l4 == r and l1 == t:czworki.append([l6, l2,l4,l1])
-
-                        elif l6 == w and l2 == e and l4 == r and l3 == t:czworki.append([l6, l2,l4,l3])
-
-                        elif l6 == w and l2 == e and l4 == r and l5 == t:czworki.append([l6, l2,l4,l5])
-
-                        elif l6 == w and l2 == e and l5 == r and l1 == t:czworki.append([l6, l2,l5,l1])
-
-                        elif l6 == w and l2 == e and l5 == r and l3 == t:czworki.append([l6, l2,l5,l3])
-                        elif l6 == w and l2 == e and l5 == r and l4 == t:czworki.append([l6, l2,l5,l4])
-
-                        elif l6 == w and l3 == e and l1 == r and l2 == t:czworki.append([l6, l3,l1,l2])
-
-                        elif l6 == w and l3 == e and l1 == r and l4 == t:czworki.append([l6, l3,l1,l4])
-                        elif l6 == w and l3 == e and l1 == r and l5 == t:czworki.append([l6, l3,l1,l5])
-
-                        elif l6 == w and l3 == e and l2 == r and l1 == t:czworki.append([l6, l3,l2,l1])
-
-
-                        elif l6 == w and l3 == e and l2 == r and l4 == t:czworki.append([l6, l3,l2,l4])
-                        elif l6 == w and l3 == e and l2 == r and l5 == t:czworki.append([l6, l3,l2,l5])
-
-                        elif l6 == w and l3 == e and l4 == r and l1 == t:czworki.append([l6, l3,l4,l1])
-                        elif l6 == w and l3 == e and l4 == r and l2 == t:czworki.append([l6, l3,l4,l2])
-
-
-                        elif l6 == w and l3 == e and l4 == r and l5 == t:czworki.append([l6, l3,l4,l5])
-
-                        elif l6 == w and l3 == e and l5 == r and l1 == t:czworki.append([l6, l3,l5,l1])
-                        elif l6 == w and l3 == e and l5 == r and l2 == t:czworki.append([l6, l3,l5,l2])
-
-                        elif l6 == w and l3 == e and l5 == r and l4 == t:czworki.append([l6, l3,l5,l4])
-
-                        elif l6 == w and l4 == e and l1 == r and l2 == t:czworki.append([l6, l4,l1,l2])
-                        elif l6 == w and l4 == e and l1 == r and l3 == t:czworki.append([l6, l4,l1,l3])
-
-                        elif l6 == w and l4 == e and l1 == r and l5 == t:czworki.append([l6, l4,l1,l5])
-
-                        elif l6 == w and l4 == e and l2 == r and l1 == t:czworki.append([l6, l4,l2,l1])
-
-                        elif l6 == w and l4 == e and l2 == r and l3 == t:czworki.append([l6, l4,l2,l3])
-
-                        elif l6 == w and l4 == e and l2 == r and l5 == t:czworki.append([l6, l4,l2,l5])
-
-                        elif l6 == w and l4 == e and l3 == r and l1 == t:czworki.append([l6, l4,l3,l1])
-                        elif l6 == w and l4 == e and l3 == r and l2 == t:czworki.append([l6, l4,l3,l2])
-
-
-                        elif l6 == w and l4 == e and l3 == r and l5 == t:czworki.append([l6, l4,l3,l5])
-
-                        elif l6 == w and l4 == e and l5 == r and l1 == t:czworki.append([l6, l4,l5,l1])
-                        elif l6 == w and l4 == e and l5 == r and l2 == t:czworki.append([l6, l4,l5,l2])
-                        elif l6 == w and l4 == e and l5 == r and l3 == t:czworki.append([l6, l4,l5,l3])
-
-                        elif l6 == w and l5 == e and l1 == r and l2 == t:czworki.append([l6, l5,l1,l2])
-                        elif l6 == w and l5 == e and l1 == r and l3 == t:czworki.append([l6, l5,l1,l3])
-                        elif l6 == w and l5 == e and l1 == r and l4 == t:czworki.append([l6, l5,l1,l4])
-
-
-                        elif l6 == w and l5 == e and l2 == r and l1 == t:czworki.append([l6, l5,l2,l1])
-
-                        elif l6 == w and l5 == e and l2 == r and l3 == t:czworki.append([l6, l5,l2,l3])
-                        elif l6 == w and l5 == e and l2 == r and l4 == t:czworki.append([l6, l5,l2,l4])
-
-
-                        elif l6 == w and l5 == e and l3 == r and l1 == t:czworki.append([l6, l5,l3,l1])
-                        elif l6 == w and l5 == e and l3 == r and l2 == t:czworki.append([l6, l5,l3,l2])
-
-                        elif l6 == w and l5 == e and l3 == r and l4 == t:czworki.append([l6, l5,l3,l4])
-
-
-                        elif l6 == w and l5 == e and l4 == r and l1 == t:czworki.append([l6, l5,l4,l1])
-                        elif l6 == w and l5 == e and l4 == r and l2 == t:czworki.append([l6, l5,l4,l2])
-                        elif l6 == w and l5 == e and l4 == r and l3 == t:czworki.append([l6, l5,l4,l3])
-        
+                    for t in range(1, 50):
+                        if l1 == w and l2 == e and l3 == r and l4 == t:
+                            czworki.append([l1, l2, l3, l4])
+                        elif l1 == w and l2 == e and l3 == r and l5 == t:
+                            czworki.append([l1, l2, l3, l5])
+                        elif l1 == w and l2 == e and l3 == r and l6 == t:
+                            czworki.append([l1, l2, l3, l6])
+                        elif l1 == w and l2 == e and l4 == r and l3 == t:
+                            czworki.append([l1, l2, l4, l3])
+                        elif l1 == w and l2 == e and l4 == r and l5 == t:
+                            czworki.append([l1, l2, l4, l5])
+                        elif l1 == w and l2 == e and l4 == r and l6 == t:
+                            czworki.append([l1, l2, l4, l6])
+                        elif l1 == w and l2 == e and l5 == r and l3 == t:
+                            czworki.append([l1, l2, l5, l3])
+                        elif l1 == w and l2 == e and l5 == r and l4 == t:
+                            czworki.append([l1, l2, l5, l4])
+                        elif l1 == w and l2 == e and l5 == r and l6 == t:
+                            czworki.append([l1, l2, l5, l6])
+                        elif l1 == w and l2 == e and l6 == r and l3 == t:
+                            czworki.append([l1, l2, l6, l3])
+                        elif l1 == w and l2 == e and l6 == r and l4 == t:
+                            czworki.append([l1, l2, l6, l4])
+                        elif l1 == w and l2 == e and l6 == r and l5 == t:
+                            czworki.append([l1, l2, l6, l5])
+                        elif l1 == w and l3 == e and l2 == r and l4 == t:
+                            czworki.append([l1, l3, l2, l4])
+                        elif l1 == w and l3 == e and l2 == r and l5 == t:
+                            czworki.append([l1, l3, l2, l5])
+                        elif l1 == w and l3 == e and l2 == r and l6 == t:
+                            czworki.append([l1, l3, l2, l6])
+                        elif l1 == w and l3 == e and l4 == r and l2 == t:
+                            czworki.append([l1, l3, l4, l2])
+                        elif l1 == w and l3 == e and l4 == r and l5 == t:
+                            czworki.append([l1, l3, l4, l5])
+                        elif l1 == w and l3 == e and l4 == r and l6 == t:
+                            czworki.append([l1, l3, l4, l6])
+                        elif l1 == w and l3 == e and l5 == r and l2 == t:
+                            czworki.append([l1, l3, l5, l2])
+                        elif l1 == w and l3 == e and l5 == r and l4 == t:
+                            czworki.append([l1, l3, l5, l4])
+                        elif l1 == w and l3 == e and l5 == r and l6 == t:
+                            czworki.append([l1, l3, l5, l6])
+                        elif l1 == w and l3 == e and l6 == r and l2 == t:
+                            czworki.append([l1, l3, l6, l2])
+                        elif l1 == w and l3 == e and l6 == r and l4 == t:
+                            czworki.append([l1, l3, l6, l4])
+                        elif l1 == w and l3 == e and l6 == r and l5 == t:
+                            czworki.append([l1, l3, l6, l5])
+                        elif l1 == w and l4 == e and l2 == r and l3 == t:
+                            czworki.append([l1, l4, l2, l3])
+                        elif l1 == w and l4 == e and l2 == r and l5 == t:
+                            czworki.append([l1, l4, l2, l5])
+                        elif l1 == w and l4 == e and l2 == r and l6 == t:
+                            czworki.append([l1, l4, l2, l6])
+                        elif l1 == w and l4 == e and l3 == r and l2 == t:
+                            czworki.append([l1, l4, l3, l2])
+                        elif l1 == w and l4 == e and l3 == r and l5 == t:
+                            czworki.append([l1, l4, l3, l5])
+                        elif l1 == w and l4 == e and l3 == r and l6 == t:
+                            czworki.append([l1, l4, l3, l6])
+                        elif l1 == w and l4 == e and l5 == r and l2 == t:
+                            czworki.append([l1, l4, l5, l2])
+                        elif l1 == w and l4 == e and l5 == r and l3 == t:
+                            czworki.append([l1, l4, l5, l3])
+                        elif l1 == w and l4 == e and l5 == r and l6 == t:
+                            czworki.append([l1, l4, l5, l6])
+                        elif l1 == w and l4 == e and l6 == r and l2 == t:
+                            czworki.append([l1, l4, l6, l2])
+                        elif l1 == w and l4 == e and l6 == r and l3 == t:
+                            czworki.append([l1, l4, l6, l3])
+                        elif l1 == w and l4 == e and l6 == r and l5 == t:
+                            czworki.append([l1, l4, l6, l5])
+                        elif l1 == w and l5 == e and l2 == r and l3 == t:
+                            czworki.append([l1, l5, l2, l3])
+                        elif l1 == w and l5 == e and l2 == r and l4 == t:
+                            czworki.append([l1, l5, l2, l4])
+                        elif l1 == w and l5 == e and l2 == r and l6 == t:
+                            czworki.append([l1, l5, l2, l6])
+                        elif l1 == w and l5 == e and l3 == r and l2 == t:
+                            czworki.append([l1, l5, l3, l2])
+                        elif l1 == w and l5 == e and l3 == r and l4 == t:
+                            czworki.append([l1, l5, l3, l4])
+                        elif l1 == w and l5 == e and l3 == r and l6 == t:
+                            czworki.append([l1, l5, l3, l6])
+                        elif l1 == w and l5 == e and l4 == r and l2 == t:
+                            czworki.append([l1, l5, l4, l2])
+                        elif l1 == w and l5 == e and l4 == r and l3 == t:
+                            czworki.append([l1, l5, l4, l3])
+                        elif l1 == w and l5 == e and l4 == r and l6 == t:
+                            czworki.append([l1, l5, l4, l6])
+                        elif l1 == w and l5 == e and l6 == r and l2 == t:
+                            czworki.append([l1, l5, l6, l2])
+                        elif l1 == w and l5 == e and l6 == r and l3 == t:
+                            czworki.append([l1, l5, l6, l3])
+                        elif l1 == w and l5 == e and l6 == r and l4 == t:
+                            czworki.append([l1, l5, l6, l4])
+                        elif l1 == w and l6 == e and l2 == r and l3 == t:
+                            czworki.append([l1, l6, l2, l3])
+                        elif l1 == w and l6 == e and l2 == r and l4 == t:
+                            czworki.append([l1, l6, l2, l4])
+                        elif l1 == w and l6 == e and l2 == r and l5 == t:
+                            czworki.append([l1, l6, l2, l5])
+                        elif l1 == w and l6 == e and l3 == r and l2 == t:
+                            czworki.append([l1, l6, l3, l2])
+                        elif l1 == w and l6 == e and l3 == r and l4 == t:
+                            czworki.append([l1, l6, l3, l4])
+                        elif l1 == w and l6 == e and l3 == r and l5 == t:
+                            czworki.append([l1, l6, l3, l5])
+                        elif l1 == w and l6 == e and l4 == r and l2 == t:
+                            czworki.append([l1, l6, l4, l2])
+                        elif l1 == w and l6 == e and l4 == r and l3 == t:
+                            czworki.append([l1, l6, l4, l3])
+                        elif l1 == w and l6 == e and l4 == r and l5 == t:
+                            czworki.append([l1, l6, l4, l5])
+                        elif l1 == w and l6 == e and l5 == r and l2 == t:
+                            czworki.append([l1, l6, l5, l2])
+                        elif l1 == w and l6 == e and l5 == r and l3 == t:
+                            czworki.append([l1, l6, l5, l3])
+                        elif l1 == w and l6 == e and l5 == r and l4 == t:
+                            czworki.append([l1, l6, l5, l4])
+                        elif l2 == w and l1 == e and l3 == r and l4 == t:
+                            czworki.append([l2, l1, l3, l4])
+                        elif l2 == w and l1 == e and l3 == r and l5 == t:
+                            czworki.append([l2, l1, l3, l5])
+                        elif l2 == w and l1 == e and l3 == r and l6 == t:
+                            czworki.append([l2, l1, l3, l6])
+                        elif l2 == w and l1 == e and l4 == r and l3 == t:
+                            czworki.append([l2, l1, l4, l3])
+                        elif l2 == w and l1 == e and l4 == r and l5 == t:
+                            czworki.append([l2, l1, l4, l5])
+                        elif l2 == w and l1 == e and l4 == r and l6 == t:
+                            czworki.append([l2, l1, l4, l6])
+                        elif l2 == w and l1 == e and l5 == r and l3 == t:
+                            czworki.append([l2, l1, l5, l3])
+                        elif l2 == w and l1 == e and l5 == r and l4 == t:
+                            czworki.append([l2, l1, l5, l4])
+                        elif l2 == w and l1 == e and l5 == r and l6 == t:
+                            czworki.append([l2, l1, l5, l6])
+                        elif l2 == w and l1 == e and l6 == r and l3 == t:
+                            czworki.append([l2, l1, l6, l3])
+                        elif l2 == w and l1 == e and l6 == r and l4 == t:
+                            czworki.append([l2, l1, l6, l4])
+                        elif l2 == w and l1 == e and l6 == r and l5 == t:
+                            czworki.append([l2, l1, l6, l5])
+                        elif l2 == w and l3 == e and l1 == r and l4 == t:
+                            czworki.append([l2, l3, l1, l4])
+                        elif l2 == w and l3 == e and l1 == r and l5 == t:
+                            czworki.append([l2, l3, l1, l5])
+                        elif l2 == w and l3 == e and l1 == r and l6 == t:
+                            czworki.append([l2, l3, l1, l6])
+                        elif l2 == w and l3 == e and l4 == r and l1 == t:
+                            czworki.append([l2, l3, l4, l1])
+                        elif l2 == w and l3 == e and l4 == r and l5 == t:
+                            czworki.append([l2, l3, l4, l5])
+                        elif l2 == w and l3 == e and l4 == r and l6 == t:
+                            czworki.append([l2, l3, l4, l6])
+                        elif l2 == w and l3 == e and l5 == r and l1 == t:
+                            czworki.append([l2, l3, l5, l1])
+                        elif l2 == w and l3 == e and l5 == r and l4 == t:
+                            czworki.append([l2, l3, l5, l4])
+                        elif l2 == w and l3 == e and l5 == r and l6 == t:
+                            czworki.append([l2, l3, l5, l6])
+                        elif l2 == w and l3 == e and l6 == r and l1 == t:
+                            czworki.append([l2, l3, l6, l1])
+                        elif l2 == w and l3 == e and l6 == r and l4 == t:
+                            czworki.append([l2, l3, l6, l4])
+                        elif l2 == w and l3 == e and l6 == r and l5 == t:
+                            czworki.append([l2, l3, l6, l5])
+                        elif l2 == w and l4 == e and l1 == r and l3 == t:
+                            czworki.append([l2, l4, l1, l3])
+                        elif l2 == w and l4 == e and l1 == r and l5 == t:
+                            czworki.append([l2, l4, l1, l5])
+                        elif l2 == w and l4 == e and l1 == r and l6 == t:
+                            czworki.append([l2, l4, l1, l6])
+                        elif l2 == w and l4 == e and l3 == r and l1 == t:
+                            czworki.append([l2, l4, l3, l1])
+                        elif l2 == w and l4 == e and l3 == r and l5 == t:
+                            czworki.append([l2, l4, l3, l5])
+                        elif l2 == w and l4 == e and l3 == r and l6 == t:
+                            czworki.append([l2, l4, l3, l6])
+                        elif l2 == w and l4 == e and l5 == r and l1 == t:
+                            czworki.append([l2, l4, l5, l1])
+                        elif l2 == w and l4 == e and l5 == r and l3 == t:
+                            czworki.append([l2, l4, l5, l3])
+                        elif l2 == w and l4 == e and l5 == r and l6 == t:
+                            czworki.append([l2, l4, l5, l6])
+                        elif l2 == w and l4 == e and l6 == r and l1 == t:
+                            czworki.append([l2, l4, l6, l1])
+                        elif l2 == w and l4 == e and l6 == r and l3 == t:
+                            czworki.append([l2, l4, l6, l3])
+                        elif l2 == w and l4 == e and l6 == r and l5 == t:
+                            czworki.append([l2, l4, l6, l5])
+                        elif l2 == w and l5 == e and l1 == r and l3 == t:
+                            czworki.append([l2, l5, l1, l3])
+                        elif l2 == w and l5 == e and l1 == r and l4 == t:
+                            czworki.append([l2, l5, l1, l4])
+                        elif l2 == w and l5 == e and l1 == r and l6 == t:
+                            czworki.append([l2, l5, l1, l6])
+                        elif l2 == w and l5 == e and l3 == r and l1 == t:
+                            czworki.append([l2, l5, l3, l1])
+                        elif l2 == w and l5 == e and l3 == r and l4 == t:
+                            czworki.append([l2, l5, l3, l4])
+                        elif l2 == w and l5 == e and l3 == r and l6 == t:
+                            czworki.append([l2, l5, l3, l6])
+                        elif l2 == w and l5 == e and l4 == r and l1 == t:
+                            czworki.append([l2, l5, l4, l1])
+                        elif l2 == w and l5 == e and l4 == r and l3 == t:
+                            czworki.append([l2, l5, l4, l3])
+                        elif l2 == w and l5 == e and l4 == r and l6 == t:
+                            czworki.append([l2, l5, l4, l6])
+                        elif l2 == w and l5 == e and l6 == r and l1 == t:
+                            czworki.append([l2, l5, l6, l1])
+                        elif l2 == w and l5 == e and l6 == r and l3 == t:
+                            czworki.append([l2, l5, l6, l3])
+                        elif l2 == w and l5 == e and l6 == r and l4 == t:
+                            czworki.append([l2, l5, l6, l4])
+                        elif l2 == w and l6 == e and l1 == r and l3 == t:
+                            czworki.append([l2, l6, l1, l3])
+                        elif l2 == w and l6 == e and l1 == r and l4 == t:
+                            czworki.append([l2, l6, l1, l4])
+                        elif l2 == w and l6 == e and l1 == r and l5 == t:
+                            czworki.append([l2, l6, l1, l5])
+                        elif l2 == w and l6 == e and l3 == r and l1 == t:
+                            czworki.append([l2, l6, l3, l1])
+                        elif l2 == w and l6 == e and l3 == r and l4 == t:
+                            czworki.append([l2, l6, l3, l4])
+                        elif l2 == w and l6 == e and l3 == r and l5 == t:
+                            czworki.append([l2, l6, l3, l5])
+                        elif l2 == w and l6 == e and l4 == r and l1 == t:
+                            czworki.append([l2, l6, l4, l1])
+                        elif l2 == w and l6 == e and l4 == r and l3 == t:
+                            czworki.append([l2, l6, l4, l3])
+                        elif l2 == w and l6 == e and l4 == r and l5 == t:
+                            czworki.append([l2, l6, l4, l5])
+                        elif l2 == w and l6 == e and l5 == r and l1 == t:
+                            czworki.append([l2, l6, l5, l1])
+                        elif l2 == w and l6 == e and l5 == r and l3 == t:
+                            czworki.append([l2, l6, l5, l3])
+                        elif l2 == w and l6 == e and l5 == r and l4 == t:
+                            czworki.append([l2, l6, l5, l4])
+                        elif l3 == w and l1 == e and l2 == r and l4 == t:
+                            czworki.append([l3, l1, l2, l4])
+                        elif l3 == w and l1 == e and l2 == r and l5 == t:
+                            czworki.append([l3, l1, l2, l5])
+                        elif l3 == w and l1 == e and l2 == r and l6 == t:
+                            czworki.append([l3, l1, l2, l6])
+                        elif l3 == w and l1 == e and l4 == r and l2 == t:
+                            czworki.append([l3, l1, l4, l2])
+                        elif l3 == w and l1 == e and l4 == r and l5 == t:
+                            czworki.append([l3, l1, l4, l5])
+                        elif l3 == w and l1 == e and l4 == r and l6 == t:
+                            czworki.append([l3, l1, l4, l6])
+                        elif l3 == w and l1 == e and l5 == r and l2 == t:
+                            czworki.append([l3, l1, l5, l2])
+                        elif l3 == w and l1 == e and l5 == r and l4 == t:
+                            czworki.append([l3, l1, l5, l4])
+                        elif l3 == w and l1 == e and l5 == r and l6 == t:
+                            czworki.append([l3, l1, l5, l6])
+                        elif l3 == w and l1 == e and l6 == r and l2 == t:
+                            czworki.append([l3, l1, l6, l2])
+                        elif l3 == w and l1 == e and l6 == r and l4 == t:
+                            czworki.append([l3, l1, l6, l4])
+                        elif l3 == w and l1 == e and l6 == r and l5 == t:
+                            czworki.append([l3, l1, l6, l5])
+                        elif l3 == w and l2 == e and l1 == r and l4 == t:
+                            czworki.append([l3, l2, l1, l4])
+                        elif l3 == w and l2 == e and l1 == r and l5 == t:
+                            czworki.append([l3, l2, l1, l5])
+                        elif l3 == w and l2 == e and l1 == r and l6 == t:
+                            czworki.append([l3, l2, l1, l6])
+                        elif l3 == w and l2 == e and l4 == r and l1 == t:
+                            czworki.append([l3, l2, l4, l1])
+                        elif l3 == w and l2 == e and l4 == r and l5 == t:
+                            czworki.append([l3, l2, l4, l5])
+                        elif l3 == w and l2 == e and l4 == r and l6 == t:
+                            czworki.append([l3, l2, l4, l6])
+                        elif l3 == w and l2 == e and l5 == r and l1 == t:
+                            czworki.append([l3, l2, l5, l1])
+                        elif l3 == w and l2 == e and l5 == r and l4 == t:
+                            czworki.append([l3, l2, l5, l4])
+                        elif l3 == w and l2 == e and l5 == r and l6 == t:
+                            czworki.append([l3, l2, l5, l6])
+                        elif l3 == w and l2 == e and l6 == r and l1 == t:
+                            czworki.append([l3, l2, l6, l1])
+                        elif l3 == w and l2 == e and l6 == r and l4 == t:
+                            czworki.append([l3, l2, l6, l4])
+                        elif l3 == w and l2 == e and l6 == r and l5 == t:
+                            czworki.append([l3, l2, l6, l5])
+                        elif l3 == w and l4 == e and l1 == r and l2 == t:
+                            czworki.append([l3, l4, l1, l2])
+                        elif l3 == w and l4 == e and l1 == r and l5 == t:
+                            czworki.append([l3, l4, l1, l5])
+                        elif l3 == w and l4 == e and l1 == r and l6 == t:
+                            czworki.append([l3, l4, l1, l6])
+                        elif l3 == w and l4 == e and l2 == r and l1 == t:
+                            czworki.append([l3, l4, l2, l1])
+                        elif l3 == w and l4 == e and l2 == r and l5 == t:
+                            czworki.append([l3, l4, l2, l5])
+                        elif l3 == w and l4 == e and l2 == r and l6 == t:
+                            czworki.append([l3, l4, l2, l6])
+                        elif l3 == w and l4 == e and l5 == r and l1 == t:
+                            czworki.append([l3, l4, l5, l1])
+                        elif l3 == w and l4 == e and l5 == r and l2 == t:
+                            czworki.append([l3, l4, l5, l2])
+                        elif l3 == w and l4 == e and l5 == r and l6 == t:
+                            czworki.append([l3, l4, l5, l6])
+                        elif l3 == w and l4 == e and l6 == r and l1 == t:
+                            czworki.append([l3, l4, l6, l1])
+                        elif l3 == w and l4 == e and l6 == r and l2 == t:
+                            czworki.append([l3, l4, l6, l2])
+                        elif l3 == w and l4 == e and l6 == r and l5 == t:
+                            czworki.append([l3, l4, l6, l5])
+                        elif l3 == w and l5 == e and l1 == r and l2 == t:
+                            czworki.append([l3, l5, l1, l2])
+                        elif l3 == w and l5 == e and l1 == r and l4 == t:
+                            czworki.append([l3, l5, l1, l4])
+                        elif l3 == w and l5 == e and l1 == r and l6 == t:
+                            czworki.append([l3, l5, l1, l6])
+                        elif l3 == w and l5 == e and l2 == r and l1 == t:
+                            czworki.append([l3, l5, l2, l1])
+                        elif l3 == w and l5 == e and l2 == r and l4 == t:
+                            czworki.append([l3, l5, l2, l4])
+                        elif l3 == w and l5 == e and l2 == r and l6 == t:
+                            czworki.append([l3, l5, l2, l6])
+                        elif l3 == w and l5 == e and l4 == r and l1 == t:
+                            czworki.append([l3, l5, l4, l1])
+                        elif l3 == w and l5 == e and l4 == r and l2 == t:
+                            czworki.append([l3, l5, l4, l2])
+                        elif l3 == w and l5 == e and l4 == r and l6 == t:
+                            czworki.append([l3, l5, l4, l6])
+                        elif l3 == w and l5 == e and l6 == r and l1 == t:
+                            czworki.append([l3, l5, l6, l1])
+                        elif l3 == w and l5 == e and l6 == r and l2 == t:
+                            czworki.append([l3, l5, l6, l2])
+                        elif l3 == w and l5 == e and l6 == r and l4 == t:
+                            czworki.append([l3, l5, l6, l4])
+                        elif l3 == w and l6 == e and l1 == r and l2 == t:
+                            czworki.append([l3, l6, l1, l2])
+                        elif l3 == w and l6 == e and l1 == r and l4 == t:
+                            czworki.append([l3, l6, l1, l4])
+                        elif l3 == w and l6 == e and l1 == r and l5 == t:
+                            czworki.append([l3, l6, l1, l5])
+                        elif l3 == w and l6 == e and l2 == r and l1 == t:
+                            czworki.append([l3, l6, l2, l1])
+                        elif l3 == w and l6 == e and l2 == r and l4 == t:
+                            czworki.append([l3, l6, l2, l4])
+                        elif l3 == w and l6 == e and l2 == r and l5 == t:
+                            czworki.append([l3, l6, l2, l5])
+                        elif l3 == w and l6 == e and l4 == r and l1 == t:
+                            czworki.append([l3, l6, l4, l1])
+                        elif l3 == w and l6 == e and l4 == r and l2 == t:
+                            czworki.append([l3, l6, l4, l2])
+                        elif l3 == w and l6 == e and l4 == r and l5 == t:
+                            czworki.append([l3, l6, l4, l5])
+                        elif l3 == w and l6 == e and l5 == r and l1 == t:
+                            czworki.append([l3, l6, l5, l1])
+                        elif l3 == w and l6 == e and l5 == r and l2 == t:
+                            czworki.append([l3, l6, l5, l2])
+                        elif l3 == w and l6 == e and l5 == r and l4 == t:
+                            czworki.append([l3, l6, l5, l4])
+                        elif l4 == w and l1 == e and l2 == r and l3 == t:
+                            czworki.append([l4, l1, l2, l3])
+                        elif l4 == w and l1 == e and l2 == r and l5 == t:
+                            czworki.append([l4, l1, l2, l5])
+                        elif l4 == w and l1 == e and l2 == r and l6 == t:
+                            czworki.append([l4, l1, l2, l6])
+                        elif l4 == w and l1 == e and l3 == r and l2 == t:
+                            czworki.append([l4, l1, l3, l2])
+                        elif l4 == w and l1 == e and l3 == r and l5 == t:
+                            czworki.append([l4, l1, l3, l5])
+                        elif l4 == w and l1 == e and l3 == r and l6 == t:
+                            czworki.append([l4, l1, l3, l6])
+                        elif l4 == w and l1 == e and l5 == r and l2 == t:
+                            czworki.append([l4, l1, l5, l2])
+                        elif l4 == w and l1 == e and l5 == r and l3 == t:
+                            czworki.append([l4, l1, l5, l3])
+                        elif l4 == w and l1 == e and l5 == r and l6 == t:
+                            czworki.append([l4, l1, l5, l6])
+                        elif l4 == w and l1 == e and l6 == r and l2 == t:
+                            czworki.append([l4, l1, l6, l2])
+                        elif l4 == w and l1 == e and l6 == r and l3 == t:
+                            czworki.append([l4, l1, l6, l3])
+                        elif l4 == w and l1 == e and l6 == r and l5 == t:
+                            czworki.append([l4, l1, l6, l5])
+                        elif l4 == w and l2 == e and l1 == r and l3 == t:
+                            czworki.append([l4, l2, l1, l3])
+                        elif l4 == w and l2 == e and l1 == r and l5 == t:
+                            czworki.append([l4, l2, l1, l5])
+                        elif l4 == w and l2 == e and l1 == r and l6 == t:
+                            czworki.append([l4, l2, l1, l6])
+                        elif l4 == w and l2 == e and l3 == r and l1 == t:
+                            czworki.append([l4, l2, l3, l1])
+                        elif l4 == w and l2 == e and l3 == r and l5 == t:
+                            czworki.append([l4, l2, l3, l5])
+                        elif l4 == w and l2 == e and l3 == r and l6 == t:
+                            czworki.append([l4, l2, l3, l6])
+                        elif l4 == w and l2 == e and l5 == r and l1 == t:
+                            czworki.append([l4, l2, l5, l1])
+                        elif l4 == w and l2 == e and l5 == r and l3 == t:
+                            czworki.append([l4, l2, l5, l3])
+                        elif l4 == w and l2 == e and l5 == r and l6 == t:
+                            czworki.append([l4, l2, l5, l6])
+                        elif l4 == w and l2 == e and l6 == r and l1 == t:
+                            czworki.append([l4, l2, l6, l1])
+                        elif l4 == w and l2 == e and l6 == r and l3 == t:
+                            czworki.append([l4, l2, l6, l3])
+                        elif l4 == w and l2 == e and l6 == r and l5 == t:
+                            czworki.append([l4, l2, l6, l5])
+                        elif l4 == w and l3 == e and l1 == r and l2 == t:
+                            czworki.append([l4, l3, l1, l2])
+                        elif l4 == w and l3 == e and l1 == r and l5 == t:
+                            czworki.append([l4, l3, l1, l5])
+                        elif l4 == w and l3 == e and l1 == r and l6 == t:
+                            czworki.append([l4, l3, l1, l6])
+                        elif l4 == w and l3 == e and l2 == r and l1 == t:
+                            czworki.append([l4, l3, l2, l1])
+                        elif l4 == w and l3 == e and l2 == r and l5 == t:
+                            czworki.append([l4, l3, l2, l5])
+                        elif l4 == w and l3 == e and l2 == r and l6 == t:
+                            czworki.append([l4, l3, l2, l6])
+                        elif l4 == w and l3 == e and l5 == r and l1 == t:
+                            czworki.append([l4, l3, l5, l1])
+                        elif l4 == w and l3 == e and l5 == r and l2 == t:
+                            czworki.append([l4, l3, l5, l2])
+                        elif l4 == w and l3 == e and l5 == r and l6 == t:
+                            czworki.append([l4, l3, l5, l6])
+                        elif l4 == w and l3 == e and l6 == r and l1 == t:
+                            czworki.append([l4, l3, l6, l1])
+                        elif l4 == w and l3 == e and l6 == r and l2 == t:
+                            czworki.append([l4, l3, l6, l2])
+                        elif l4 == w and l3 == e and l6 == r and l5 == t:
+                            czworki.append([l4, l3, l6, l5])
+                        elif l4 == w and l5 == e and l1 == r and l2 == t:
+                            czworki.append([l4, l5, l1, l2])
+                        elif l4 == w and l5 == e and l1 == r and l3 == t:
+                            czworki.append([l4, l5, l1, l3])
+                        elif l4 == w and l5 == e and l1 == r and l6 == t:
+                            czworki.append([l4, l5, l1, l6])
+                        elif l4 == w and l5 == e and l2 == r and l1 == t:
+                            czworki.append([l4, l5, l2, l1])
+                        elif l4 == w and l5 == e and l2 == r and l3 == t:
+                            czworki.append([l4, l5, l2, l3])
+                        elif l4 == w and l5 == e and l2 == r and l6 == t:
+                            czworki.append([l4, l5, l2, l6])
+                        elif l4 == w and l5 == e and l3 == r and l1 == t:
+                            czworki.append([l4, l5, l3, l1])
+                        elif l4 == w and l5 == e and l3 == r and l2 == t:
+                            czworki.append([l4, l5, l3, l2])
+                        elif l4 == w and l5 == e and l3 == r and l6 == t:
+                            czworki.append([l4, l5, l3, l6])
+                        elif l4 == w and l5 == e and l6 == r and l1 == t:
+                            czworki.append([l4, l5, l6, l1])
+                        elif l4 == w and l5 == e and l6 == r and l2 == t:
+                            czworki.append([l4, l5, l6, l2])
+                        elif l4 == w and l5 == e and l6 == r and l3 == t:
+                            czworki.append([l4, l5, l6, l3])
+                        elif l4 == w and l6 == e and l1 == r and l2 == t:
+                            czworki.append([l4, l6, l1, l2])
+                        elif l4 == w and l6 == e and l1 == r and l3 == t:
+                            czworki.append([l4, l6, l1, l3])
+                        elif l4 == w and l6 == e and l1 == r and l5 == t:
+                            czworki.append([l4, l6, l1, l5])
+                        elif l4 == w and l6 == e and l2 == r and l1 == t:
+                            czworki.append([l4, l6, l2, l1])
+                        elif l4 == w and l6 == e and l2 == r and l3 == t:
+                            czworki.append([l4, l6, l2, l3])
+                        elif l4 == w and l6 == e and l2 == r and l5 == t:
+                            czworki.append([l4, l6, l2, l5])
+                        elif l4 == w and l6 == e and l3 == r and l1 == t:
+                            czworki.append([l4, l6, l3, l1])
+                        elif l4 == w and l6 == e and l3 == r and l2 == t:
+                            czworki.append([l4, l6, l3, l2])
+                        elif l4 == w and l6 == e and l3 == r and l5 == t:
+                            czworki.append([l4, l6, l3, l5])
+                        elif l4 == w and l6 == e and l5 == r and l1 == t:
+                            czworki.append([l4, l6, l5, l1])
+                        elif l4 == w and l6 == e and l5 == r and l2 == t:
+                            czworki.append([l4, l6, l5, l2])
+                        elif l4 == w and l6 == e and l5 == r and l3 == t:
+                            czworki.append([l4, l6, l5, l3])
+                        elif l5 == w and l1 == e and l2 == r and l3 == t:
+                            czworki.append([l5, l1, l2, l3])
+                        elif l5 == w and l1 == e and l2 == r and l4 == t:
+                            czworki.append([l5, l1, l2, l4])
+                        elif l5 == w and l1 == e and l2 == r and l6 == t:
+                            czworki.append([l5, l1, l2, l6])
+                        elif l5 == w and l1 == e and l3 == r and l2 == t:
+                            czworki.append([l5, l1, l3, l2])
+                        elif l5 == w and l1 == e and l3 == r and l4 == t:
+                            czworki.append([l5, l1, l3, l4])
+                        elif l5 == w and l1 == e and l3 == r and l6 == t:
+                            czworki.append([l5, l1, l3, l6])
+                        elif l5 == w and l1 == e and l4 == r and l2 == t:
+                            czworki.append([l5, l1, l4, l2])
+                        elif l5 == w and l1 == e and l4 == r and l3 == t:
+                            czworki.append([l5, l1, l4, l3])
+                        elif l5 == w and l1 == e and l4 == r and l6 == t:
+                            czworki.append([l5, l1, l4, l6])
+                        elif l5 == w and l1 == e and l6 == r and l2 == t:
+                            czworki.append([l5, l1, l6, l2])
+                        elif l5 == w and l1 == e and l6 == r and l3 == t:
+                            czworki.append([l5, l1, l6, l3])
+                        elif l5 == w and l1 == e and l6 == r and l4 == t:
+                            czworki.append([l5, l1, l6, l4])
+                        elif l5 == w and l2 == e and l1 == r and l3 == t:
+                            czworki.append([l5, l2, l1, l3])
+                        elif l5 == w and l2 == e and l1 == r and l4 == t:
+                            czworki.append([l5, l2, l1, l4])
+                        elif l5 == w and l2 == e and l1 == r and l6 == t:
+                            czworki.append([l5, l2, l1, l6])
+                        elif l5 == w and l2 == e and l3 == r and l1 == t:
+                            czworki.append([l5, l2, l3, l1])
+                        elif l5 == w and l2 == e and l3 == r and l4 == t:
+                            czworki.append([l5, l2, l3, l4])
+                        elif l5 == w and l2 == e and l3 == r and l6 == t:
+                            czworki.append([l5, l2, l3, l6])
+                        elif l5 == w and l2 == e and l4 == r and l1 == t:
+                            czworki.append([l5, l2, l4, l1])
+                        elif l5 == w and l2 == e and l4 == r and l3 == t:
+                            czworki.append([l5, l2, l4, l3])
+                        elif l5 == w and l2 == e and l4 == r and l6 == t:
+                            czworki.append([l5, l2, l4, l6])
+                        elif l5 == w and l2 == e and l6 == r and l1 == t:
+                            czworki.append([l5, l2, l6, l1])
+                        elif l5 == w and l2 == e and l6 == r and l3 == t:
+                            czworki.append([l5, l2, l6, l3])
+                        elif l5 == w and l2 == e and l6 == r and l4 == t:
+                            czworki.append([l5, l2, l6, l4])
+                        elif l5 == w and l3 == e and l1 == r and l2 == t:
+                            czworki.append([l5, l3, l1, l2])
+                        elif l5 == w and l3 == e and l1 == r and l4 == t:
+                            czworki.append([l5, l3, l1, l4])
+                        elif l5 == w and l3 == e and l1 == r and l6 == t:
+                            czworki.append([l5, l3, l1, l6])
+                        elif l5 == w and l3 == e and l2 == r and l1 == t:
+                            czworki.append([l5, l3, l2, l1])
+                        elif l5 == w and l3 == e and l2 == r and l4 == t:
+                            czworki.append([l5, l3, l2, l4])
+                        elif l5 == w and l3 == e and l2 == r and l6 == t:
+                            czworki.append([l5, l3, l2, l6])
+                        elif l5 == w and l3 == e and l4 == r and l1 == t:
+                            czworki.append([l5, l3, l4, l1])
+                        elif l5 == w and l3 == e and l4 == r and l2 == t:
+                            czworki.append([l5, l3, l4, l2])
+                        elif l5 == w and l3 == e and l4 == r and l6 == t:
+                            czworki.append([l5, l3, l4, l6])
+                        elif l5 == w and l3 == e and l6 == r and l1 == t:
+                            czworki.append([l5, l3, l6, l1])
+                        elif l5 == w and l3 == e and l6 == r and l2 == t:
+                            czworki.append([l5, l3, l6, l2])
+                        elif l5 == w and l3 == e and l6 == r and l4 == t:
+                            czworki.append([l5, l3, l6, l4])
+                        elif l5 == w and l4 == e and l1 == r and l2 == t:
+                            czworki.append([l5, l4, l1, l2])
+                        elif l5 == w and l4 == e and l1 == r and l3 == t:
+                            czworki.append([l5, l4, l1, l3])
+                        elif l5 == w and l4 == e and l1 == r and l6 == t:
+                            czworki.append([l5, l4, l1, l6])
+                        elif l5 == w and l4 == e and l2 == r and l1 == t:
+                            czworki.append([l5, l4, l2, l1])
+                        elif l5 == w and l4 == e and l2 == r and l3 == t:
+                            czworki.append([l5, l4, l2, l3])
+                        elif l5 == w and l4 == e and l2 == r and l6 == t:
+                            czworki.append([l5, l4, l2, l6])
+                        elif l5 == w and l4 == e and l3 == r and l1 == t:
+                            czworki.append([l5, l4, l3, l1])
+                        elif l5 == w and l4 == e and l3 == r and l2 == t:
+                            czworki.append([l5, l4, l3, l2])
+                        elif l5 == w and l4 == e and l3 == r and l6 == t:
+                            czworki.append([l5, l4, l3, l6])
+                        elif l5 == w and l4 == e and l6 == r and l1 == t:
+                            czworki.append([l5, l4, l6, l1])
+                        elif l5 == w and l4 == e and l6 == r and l2 == t:
+                            czworki.append([l5, l4, l6, l2])
+                        elif l5 == w and l4 == e and l6 == r and l3 == t:
+                            czworki.append([l5, l4, l6, l3])
+                        elif l5 == w and l6 == e and l1 == r and l2 == t:
+                            czworki.append([l5, l6, l1, l2])
+                        elif l5 == w and l6 == e and l1 == r and l3 == t:
+                            czworki.append([l5, l6, l1, l3])
+                        elif l5 == w and l6 == e and l1 == r and l4 == t:
+                            czworki.append([l5, l6, l1, l4])
+                        elif l5 == w and l6 == e and l2 == r and l1 == t:
+                            czworki.append([l5, l6, l2, l1])
+                        elif l5 == w and l6 == e and l2 == r and l3 == t:
+                            czworki.append([l5, l6, l2, l3])
+                        elif l5 == w and l6 == e and l2 == r and l4 == t:
+                            czworki.append([l5, l6, l2, l4])
+                        elif l5 == w and l6 == e and l3 == r and l1 == t:
+                            czworki.append([l5, l6, l3, l1])
+                        elif l5 == w and l6 == e and l3 == r and l2 == t:
+                            czworki.append([l5, l6, l3, l2])
+                        elif l5 == w and l6 == e and l3 == r and l4 == t:
+                            czworki.append([l5, l6, l3, l4])
+                        elif l5 == w and l6 == e and l4 == r and l1 == t:
+                            czworki.append([l5, l6, l4, l1])
+                        elif l5 == w and l6 == e and l4 == r and l2 == t:
+                            czworki.append([l5, l6, l4, l2])
+                        elif l5 == w and l6 == e and l4 == r and l3 == t:
+                            czworki.append([l5, l6, l4, l3])
+                        elif l6 == w and l1 == e and l2 == r and l3 == t:
+                            czworki.append([l6, l1, l2, l3])
+                        elif l6 == w and l1 == e and l2 == r and l4 == t:
+                            czworki.append([l6, l1, l2, l4])
+                        elif l6 == w and l1 == e and l2 == r and l5 == t:
+                            czworki.append([l6, l1, l2, l5])
+                        elif l6 == w and l1 == e and l3 == r and l2 == t:
+                            czworki.append([l6, l1, l3, l2])
+                        elif l6 == w and l1 == e and l3 == r and l4 == t:
+                            czworki.append([l6, l1, l3, l4])
+                        elif l6 == w and l1 == e and l3 == r and l5 == t:
+                            czworki.append([l6, l1, l3, l5])
+                        elif l6 == w and l1 == e and l4 == r and l2 == t:
+                            czworki.append([l6, l1, l4, l2])
+                        elif l6 == w and l1 == e and l4 == r and l3 == t:
+                            czworki.append([l6, l1, l4, l3])
+                        elif l6 == w and l1 == e and l4 == r and l5 == t:
+                            czworki.append([l6, l1, l4, l5])
+                        elif l6 == w and l1 == e and l5 == r and l2 == t:
+                            czworki.append([l6, l1, l5, l2])
+                        elif l6 == w and l1 == e and l5 == r and l3 == t:
+                            czworki.append([l6, l1, l5, l3])
+                        elif l6 == w and l1 == e and l5 == r and l4 == t:
+                            czworki.append([l6, l1, l5, l4])
+                        elif l6 == w and l2 == e and l1 == r and l3 == t:
+                            czworki.append([l6, l2, l1, l3])
+                        elif l6 == w and l2 == e and l1 == r and l4 == t:
+                            czworki.append([l6, l2, l1, l4])
+                        elif l6 == w and l2 == e and l1 == r and l5 == t:
+                            czworki.append([l6, l2, l1, l5])
+                        elif l6 == w and l2 == e and l3 == r and l1 == t:
+                            czworki.append([l6, l2, l3, l1])
+                        elif l6 == w and l2 == e and l3 == r and l4 == t:
+                            czworki.append([l6, l2, l3, l4])
+                        elif l6 == w and l2 == e and l3 == r and l5 == t:
+                            czworki.append([l6, l2, l3, l5])
+                        elif l6 == w and l2 == e and l4 == r and l1 == t:
+                            czworki.append([l6, l2, l4, l1])
+                        elif l6 == w and l2 == e and l4 == r and l3 == t:
+                            czworki.append([l6, l2, l4, l3])
+                        elif l6 == w and l2 == e and l4 == r and l5 == t:
+                            czworki.append([l6, l2, l4, l5])
+                        elif l6 == w and l2 == e and l5 == r and l1 == t:
+                            czworki.append([l6, l2, l5, l1])
+                        elif l6 == w and l2 == e and l5 == r and l3 == t:
+                            czworki.append([l6, l2, l5, l3])
+                        elif l6 == w and l2 == e and l5 == r and l4 == t:
+                            czworki.append([l6, l2, l5, l4])
+                        elif l6 == w and l3 == e and l1 == r and l2 == t:
+                            czworki.append([l6, l3, l1, l2])
+                        elif l6 == w and l3 == e and l1 == r and l4 == t:
+                            czworki.append([l6, l3, l1, l4])
+                        elif l6 == w and l3 == e and l1 == r and l5 == t:
+                            czworki.append([l6, l3, l1, l5])
+                        elif l6 == w and l3 == e and l2 == r and l1 == t:
+                            czworki.append([l6, l3, l2, l1])
+                        elif l6 == w and l3 == e and l2 == r and l4 == t:
+                            czworki.append([l6, l3, l2, l4])
+                        elif l6 == w and l3 == e and l2 == r and l5 == t:
+                            czworki.append([l6, l3, l2, l5])
+                        elif l6 == w and l3 == e and l4 == r and l1 == t:
+                            czworki.append([l6, l3, l4, l1])
+                        elif l6 == w and l3 == e and l4 == r and l2 == t:
+                            czworki.append([l6, l3, l4, l2])
+                        elif l6 == w and l3 == e and l4 == r and l5 == t:
+                            czworki.append([l6, l3, l4, l5])
+                        elif l6 == w and l3 == e and l5 == r and l1 == t:
+                            czworki.append([l6, l3, l5, l1])
+                        elif l6 == w and l3 == e and l5 == r and l2 == t:
+                            czworki.append([l6, l3, l5, l2])
+                        elif l6 == w and l3 == e and l5 == r and l4 == t:
+                            czworki.append([l6, l3, l5, l4])
+                        elif l6 == w and l4 == e and l1 == r and l2 == t:
+                            czworki.append([l6, l4, l1, l2])
+                        elif l6 == w and l4 == e and l1 == r and l3 == t:
+                            czworki.append([l6, l4, l1, l3])
+                        elif l6 == w and l4 == e and l1 == r and l5 == t:
+                            czworki.append([l6, l4, l1, l5])
+                        elif l6 == w and l4 == e and l2 == r and l1 == t:
+                            czworki.append([l6, l4, l2, l1])
+                        elif l6 == w and l4 == e and l2 == r and l3 == t:
+                            czworki.append([l6, l4, l2, l3])
+                        elif l6 == w and l4 == e and l2 == r and l5 == t:
+                            czworki.append([l6, l4, l2, l5])
+                        elif l6 == w and l4 == e and l3 == r and l1 == t:
+                            czworki.append([l6, l4, l3, l1])
+                        elif l6 == w and l4 == e and l3 == r and l2 == t:
+                            czworki.append([l6, l4, l3, l2])
+                        elif l6 == w and l4 == e and l3 == r and l5 == t:
+                            czworki.append([l6, l4, l3, l5])
+                        elif l6 == w and l4 == e and l5 == r and l1 == t:
+                            czworki.append([l6, l4, l5, l1])
+                        elif l6 == w and l4 == e and l5 == r and l2 == t:
+                            czworki.append([l6, l4, l5, l2])
+                        elif l6 == w and l4 == e and l5 == r and l3 == t:
+                            czworki.append([l6, l4, l5, l3])
+                        elif l6 == w and l5 == e and l1 == r and l2 == t:
+                            czworki.append([l6, l5, l1, l2])
+                        elif l6 == w and l5 == e and l1 == r and l3 == t:
+                            czworki.append([l6, l5, l1, l3])
+                        elif l6 == w and l5 == e and l1 == r and l4 == t:
+                            czworki.append([l6, l5, l1, l4])
+                        elif l6 == w and l5 == e and l2 == r and l1 == t:
+                            czworki.append([l6, l5, l2, l1])
+                        elif l6 == w and l5 == e and l2 == r and l3 == t:
+                            czworki.append([l6, l5, l2, l3])
+                        elif l6 == w and l5 == e and l2 == r and l4 == t:
+                            czworki.append([l6, l5, l2, l4])
+                        elif l6 == w and l5 == e and l3 == r and l1 == t:
+                            czworki.append([l6, l5, l3, l1])
+                        elif l6 == w and l5 == e and l3 == r and l2 == t:
+                            czworki.append([l6, l5, l3, l2])
+                        elif l6 == w and l5 == e and l3 == r and l4 == t:
+                            czworki.append([l6, l5, l3, l4])
+                        elif l6 == w and l5 == e and l4 == r and l1 == t:
+                            czworki.append([l6, l5, l4, l1])
+                        elif l6 == w and l5 == e and l4 == r and l2 == t:
+                            czworki.append([l6, l5, l4, l2])
+                        elif l6 == w and l5 == e and l4 == r and l3 == t:
+                            czworki.append([l6, l5, l4, l3])
+
+        conn.close()
         czworki.sort()
         liczbaTrojek = len(czworki)
 
@@ -752,13 +938,12 @@ class Program:
         for r in range(1, 50):
             for t in range(1, 50):
                 for y in range(1, 50):
-                    for u in range(1,50):
+                    for u in range(1, 50):
                         licznik = czworki.count([r, t, y, u])
                         listaCz.append([licznik, r, t, y, u])
-        
 
         listaCz.sort()
-        
+
         r = len(listaCz)
         r = r-1
         t = r-20
@@ -771,9 +956,11 @@ class Program:
             liczbaPara4 = (listaCz[r][4])
             r -= 1
 
-            tk.Label(self.ramka1, text="("+str(liczbaPara1)+" - "+str(liczbaPara2) + " - "+str(liczbaPara3)+" - "+str(liczbaPara4)+")", font=("Arial", 12), bg="#ADD8E6").place(x=40, y=ypolozenie)
-            tk.Label(self.ramka1, text="--- "+str(losowanie)+" razy", font=("Arial", 12), bg="#ADD8E6").place(x=170, y=ypolozenie)
-            
+            tk.Label(self.ramka1, text="("+str(liczbaPara1)+" - "+str(liczbaPara2) + " - "+str(liczbaPara3) +
+                     " - "+str(liczbaPara4)+")", font=("Arial", 12), bg="#ADD8E6").place(x=40, y=ypolozenie)
+            tk.Label(self.ramka1, text="--- "+str(losowanie)+" razy",
+                     font=("Arial", 12), bg="#ADD8E6").place(x=170, y=ypolozenie)
+
             ypolozenie += 25
 
         r = len(listaCz)
@@ -788,22 +975,24 @@ class Program:
             liczbaPara4 = (listaCz[r][4])
             r -= 1
 
-            tk.Label(self.ramka1, text="("+str(liczbaPara1)+" - "+str(liczbaPara2) + " - "+str(liczbaPara3)+" - "+str(liczbaPara4)+")", font=("Arial", 12), bg="#ADD8E6").place(x=390, y=ypolozenie)
-            tk.Label(self.ramka1, text="--- "+str(losowanie)+" razy", font=("Arial", 12), bg="#ADD8E6").place(x=520, y=ypolozenie)
+            tk.Label(self.ramka1, text="("+str(liczbaPara1)+" - "+str(liczbaPara2) + " - "+str(liczbaPara3) +
+                     " - "+str(liczbaPara4)+")", font=("Arial", 12), bg="#ADD8E6").place(x=390, y=ypolozenie)
+            tk.Label(self.ramka1, text="--- "+str(losowanie)+" razy",
+                     font=("Arial", 12), bg="#ADD8E6").place(x=520, y=ypolozenie)
             ypolozenie += 25
-
-        
 
         but = tk.Button(self.ramka1, text="zamknij to okno",
                         bg="#DC143C", command=self.zamknij_okno)
         but.place(x=320, y=540)
 
 
-#definicja analizy trojek
+# definicja analizy trojek
+
+
     def analiza_trojek(self):
         self.ramka1 = Frame(root,  height=596, width=650, bg="#ADD8E6")
         self.ramka1.pack(padx=5, pady=5, side=RIGHT)
-        trojki=[]
+        trojki = []
 
         conn = sqlite3.connect('baza.db')
         c = conn.cursor()
@@ -831,156 +1020,278 @@ class Program:
         for q in range(1, 50):
             for w in range(1, 50):
                 for e in range(1, 50):
-                    if l1 == q and l2 == w and l3 ==e:trojki.append([l1, l2, l3])
-                    elif l1 == q and l2 == w and l4 ==e:trojki.append([l1, l2,l4])
-                    elif l1 == q and l2 == w and l5 ==e:trojki.append([l1, l2,l5])
-                    elif l1 == q and l2 == w and l6 ==e:trojki.append([l1, l2,l6])
+                    if l1 == q and l2 == w and l3 == e:
+                        trojki.append([l1, l2, l3])
+                    elif l1 == q and l2 == w and l4 == e:
+                        trojki.append([l1, l2, l4])
+                    elif l1 == q and l2 == w and l5 == e:
+                        trojki.append([l1, l2, l5])
+                    elif l1 == q and l2 == w and l6 == e:
+                        trojki.append([l1, l2, l6])
 
-                    elif l1 == q and l3 == w and l2 ==e:trojki.append([l1, l3,l2])
-                    elif l1 == q and l3 == w and l4 ==e:trojki.append([l1, l3,l4])
-                    elif l1 == q and l3 == w and l5 ==e:trojki.append([l1, l3,l6])
-                    elif l1 == q and l3 == w and l6 ==e:trojki.append([l1, l3,l6])
+                    elif l1 == q and l3 == w and l2 == e:
+                        trojki.append([l1, l3, l2])
+                    elif l1 == q and l3 == w and l4 == e:
+                        trojki.append([l1, l3, l4])
+                    elif l1 == q and l3 == w and l5 == e:
+                        trojki.append([l1, l3, l6])
+                    elif l1 == q and l3 == w and l6 == e:
+                        trojki.append([l1, l3, l6])
 
-                    elif l1 == q and l4 == w and l2 ==e:trojki.append([l1, l4,l2])
-                    elif l1 == q and l4 == w and l3 ==e:trojki.append([l1, l4,l3])
-                    elif l1 == q and l4 == w and l5 ==e:trojki.append([l1, l4,l5])
-                    elif l1 == q and l4 == w and l6 ==e:trojki.append([l1, l4,l6])
+                    elif l1 == q and l4 == w and l2 == e:
+                        trojki.append([l1, l4, l2])
+                    elif l1 == q and l4 == w and l3 == e:
+                        trojki.append([l1, l4, l3])
+                    elif l1 == q and l4 == w and l5 == e:
+                        trojki.append([l1, l4, l5])
+                    elif l1 == q and l4 == w and l6 == e:
+                        trojki.append([l1, l4, l6])
 
-                    elif l1 == q and l5 == w and l2 ==e:trojki.append([l1, l5,l2])
-                    elif l1 == q and l5 == w and l3 ==e:trojki.append([l1, l5,l3])
-                    elif l1 == q and l5 == w and l4 ==e:trojki.append([l1, l5,l4])
-                    elif l1 == q and l5 == w and l6 ==e:trojki.append([l1, l5,l6])
+                    elif l1 == q and l5 == w and l2 == e:
+                        trojki.append([l1, l5, l2])
+                    elif l1 == q and l5 == w and l3 == e:
+                        trojki.append([l1, l5, l3])
+                    elif l1 == q and l5 == w and l4 == e:
+                        trojki.append([l1, l5, l4])
+                    elif l1 == q and l5 == w and l6 == e:
+                        trojki.append([l1, l5, l6])
 
-                    elif l1 == q and l6 == w and l2 ==e:trojki.append([l1, l6,l2])
-                    elif l1 == q and l6 == w and l3 ==e:trojki.append([l1, l6,l3])
-                    elif l1 == q and l6 == w and l4 ==e:trojki.append([l1, l6,l4])
-                    elif l1 == q and l6 == w and l5 ==e:trojki.append([l1, l6,l5])
+                    elif l1 == q and l6 == w and l2 == e:
+                        trojki.append([l1, l6, l2])
+                    elif l1 == q and l6 == w and l3 == e:
+                        trojki.append([l1, l6, l3])
+                    elif l1 == q and l6 == w and l4 == e:
+                        trojki.append([l1, l6, l4])
+                    elif l1 == q and l6 == w and l5 == e:
+                        trojki.append([l1, l6, l5])
 
-                    elif l2 == q and l1 == w and l3 ==e:trojki.append([l2, l1,l3])
-                    elif l2 == q and l1 == w and l4 ==e:trojki.append([l2, l1,l4])
-                    elif l2 == q and l1 == w and l5 ==e:trojki.append([l2, l1,l5])
-                    elif l2 == q and l1 == w and l6 ==e:trojki.append([l2, l1,l6])
+                    elif l2 == q and l1 == w and l3 == e:
+                        trojki.append([l2, l1, l3])
+                    elif l2 == q and l1 == w and l4 == e:
+                        trojki.append([l2, l1, l4])
+                    elif l2 == q and l1 == w and l5 == e:
+                        trojki.append([l2, l1, l5])
+                    elif l2 == q and l1 == w and l6 == e:
+                        trojki.append([l2, l1, l6])
 
-                    elif l2 == q and l3 == w and l1 ==e:trojki.append([l2, l3,l1])
-                    elif l2 == q and l3 == w and l4 ==e:trojki.append([l2, l3,l4])
-                    elif l2 == q and l3 == w and l5 ==e:trojki.append([l2, l3,l5])
-                    elif l2 == q and l3 == w and l6 ==e:trojki.append([l2, l3,l6])
+                    elif l2 == q and l3 == w and l1 == e:
+                        trojki.append([l2, l3, l1])
+                    elif l2 == q and l3 == w and l4 == e:
+                        trojki.append([l2, l3, l4])
+                    elif l2 == q and l3 == w and l5 == e:
+                        trojki.append([l2, l3, l5])
+                    elif l2 == q and l3 == w and l6 == e:
+                        trojki.append([l2, l3, l6])
 
-                    elif l2 == q and l4 == w and l1 ==e:trojki.append([l2, l4,l1])
-                    elif l2 == q and l4 == w and l3 ==e:trojki.append([l2, l4,l3])
-                    elif l2 == q and l4 == w and l5 ==e:trojki.append([l2, l4,l5])
-                    elif l2 == q and l4 == w and l6 ==e:trojki.append([l2, l4,l6])
+                    elif l2 == q and l4 == w and l1 == e:
+                        trojki.append([l2, l4, l1])
+                    elif l2 == q and l4 == w and l3 == e:
+                        trojki.append([l2, l4, l3])
+                    elif l2 == q and l4 == w and l5 == e:
+                        trojki.append([l2, l4, l5])
+                    elif l2 == q and l4 == w and l6 == e:
+                        trojki.append([l2, l4, l6])
 
-                    elif l2 == q and l5 == w and l1 ==e:trojki.append([l2, l5,l1])
-                    elif l2 == q and l5 == w and l3 ==e:trojki.append([l2, l5,l3])
-                    elif l2 == q and l5 == w and l4 ==e:trojki.append([l2, l5,l4])
-                    elif l2 == q and l5 == w and l6 ==e:trojki.append([l2, l5,l6])
+                    elif l2 == q and l5 == w and l1 == e:
+                        trojki.append([l2, l5, l1])
+                    elif l2 == q and l5 == w and l3 == e:
+                        trojki.append([l2, l5, l3])
+                    elif l2 == q and l5 == w and l4 == e:
+                        trojki.append([l2, l5, l4])
+                    elif l2 == q and l5 == w and l6 == e:
+                        trojki.append([l2, l5, l6])
 
-                    elif l2 == q and l6 == w and l1 ==e:trojki.append([l2, l6,l1])
-                    elif l2 == q and l6 == w and l3 ==e:trojki.append([l2, l6,l3])
-                    elif l2 == q and l6 == w and l4 ==e:trojki.append([l2, l6,l4])
-                    elif l2 == q and l6 == w and l5 ==e:trojki.append([l2, l6,l5])
+                    elif l2 == q and l6 == w and l1 == e:
+                        trojki.append([l2, l6, l1])
+                    elif l2 == q and l6 == w and l3 == e:
+                        trojki.append([l2, l6, l3])
+                    elif l2 == q and l6 == w and l4 == e:
+                        trojki.append([l2, l6, l4])
+                    elif l2 == q and l6 == w and l5 == e:
+                        trojki.append([l2, l6, l5])
 
-                    elif l3 == q and l1 == w and l2 ==e:trojki.append([l3, l1,l2])
-                    elif l3 == q and l1 == w and l4==e:trojki.append([l3, l1,l4])
-                    elif l3 == q and l1 == w and l5 ==e:trojki.append([l3, l1,l5])
-                    elif l3 == q and l1 == w and l6 ==e:trojki.append([l3, l1,l6])
+                    elif l3 == q and l1 == w and l2 == e:
+                        trojki.append([l3, l1, l2])
+                    elif l3 == q and l1 == w and l4 == e:
+                        trojki.append([l3, l1, l4])
+                    elif l3 == q and l1 == w and l5 == e:
+                        trojki.append([l3, l1, l5])
+                    elif l3 == q and l1 == w and l6 == e:
+                        trojki.append([l3, l1, l6])
 
-                    elif l3 == q and l2 == w and l1 ==e:trojki.append([l3, l2,l1])
-                    elif l3 == q and l2 == w and l4==e:trojki.append([l3, l2,l4])
-                    elif l3 == q and l2 == w and l5 ==e:trojki.append([l3, l2,l5])
-                    elif l3 == q and l2 == w and l6 ==e:trojki.append([l3, l2,l6])
-                    
-                    elif l3 == q and l4 == w and l1 ==e:trojki.append([l3, l4,l1])
-                    elif l3 == q and l4 == w and l2 ==e:trojki.append([l3, l4,l2])
-                    elif l3 == q and l4 == w and l5 ==e:trojki.append([l3, l4,l5])
-                    elif l3 == q and l4 == w and l6 ==e:trojki.append([l3, l4,l6])
+                    elif l3 == q and l2 == w and l1 == e:
+                        trojki.append([l3, l2, l1])
+                    elif l3 == q and l2 == w and l4 == e:
+                        trojki.append([l3, l2, l4])
+                    elif l3 == q and l2 == w and l5 == e:
+                        trojki.append([l3, l2, l5])
+                    elif l3 == q and l2 == w and l6 == e:
+                        trojki.append([l3, l2, l6])
 
-                    elif l3 == q and l5 == w and l1 ==e:trojki.append([l3, l5,l1])
-                    elif l3 == q and l5 == w and l2 ==e:trojki.append([l3, l5,l2])
-                    elif l3 == q and l5 == w and l4 ==e:trojki.append([l3, l5,l4])
-                    elif l3 == q and l5 == w and l6 ==e:trojki.append([l3, l5,l6])
+                    elif l3 == q and l4 == w and l1 == e:
+                        trojki.append([l3, l4, l1])
+                    elif l3 == q and l4 == w and l2 == e:
+                        trojki.append([l3, l4, l2])
+                    elif l3 == q and l4 == w and l5 == e:
+                        trojki.append([l3, l4, l5])
+                    elif l3 == q and l4 == w and l6 == e:
+                        trojki.append([l3, l4, l6])
 
-                    elif l3 == q and l6 == w and l1 ==e:trojki.append([l3, l6,l1])
-                    elif l3 == q and l6 == w and l2 ==e:trojki.append([l3, l6,l2])
-                    elif l3 == q and l6 == w and l4 ==e:trojki.append([l3, l6,l4])
-                    elif l3 == q and l6 == w and l5 ==e:trojki.append([l3, l6,l5])
+                    elif l3 == q and l5 == w and l1 == e:
+                        trojki.append([l3, l5, l1])
+                    elif l3 == q and l5 == w and l2 == e:
+                        trojki.append([l3, l5, l2])
+                    elif l3 == q and l5 == w and l4 == e:
+                        trojki.append([l3, l5, l4])
+                    elif l3 == q and l5 == w and l6 == e:
+                        trojki.append([l3, l5, l6])
 
-                    elif l4 == q and l1 == w and l1 ==e:trojki.append([l4, l1,l1])
-                    elif l4 == q and l1 == w and l2 ==e:trojki.append([l4, l1,l2])
-                    elif l4 == q and l1 == w and l5 ==e:trojki.append([l4, l1,l5])
-                    elif l4 == q and l1 == w and l6 ==e:trojki.append([l4, l1,l6])
+                    elif l3 == q and l6 == w and l1 == e:
+                        trojki.append([l3, l6, l1])
+                    elif l3 == q and l6 == w and l2 == e:
+                        trojki.append([l3, l6, l2])
+                    elif l3 == q and l6 == w and l4 == e:
+                        trojki.append([l3, l6, l4])
+                    elif l3 == q and l6 == w and l5 == e:
+                        trojki.append([l3, l6, l5])
 
-                    elif l4 == q and l2 == w and l1 ==e:trojki.append([l4, l2,l1])
-                    elif l4 == q and l2 == w and l3 ==e:trojki.append([l4, l2,l3])
-                    elif l4 == q and l2 == w and l5 ==e:trojki.append([l4, l2,l5])
-                    elif l4 == q and l2 == w and l6 ==e:trojki.append([l4, l2,l6])
+                    elif l4 == q and l1 == w and l1 == e:
+                        trojki.append([l4, l1, l1])
+                    elif l4 == q and l1 == w and l2 == e:
+                        trojki.append([l4, l1, l2])
+                    elif l4 == q and l1 == w and l5 == e:
+                        trojki.append([l4, l1, l5])
+                    elif l4 == q and l1 == w and l6 == e:
+                        trojki.append([l4, l1, l6])
 
-                    elif l4 == q and l3 == w and l1 ==e:trojki.append([l4, l3,l1])
-                    elif l4 == q and l3 == w and l2 ==e:trojki.append([l4, l3,l2])
-                    elif l4 == q and l3 == w and l5 ==e:trojki.append([l4, l3,l5])
-                    elif l4 == q and l3 == w and l6 ==e:trojki.append([l4, l3,l6])
+                    elif l4 == q and l2 == w and l1 == e:
+                        trojki.append([l4, l2, l1])
+                    elif l4 == q and l2 == w and l3 == e:
+                        trojki.append([l4, l2, l3])
+                    elif l4 == q and l2 == w and l5 == e:
+                        trojki.append([l4, l2, l5])
+                    elif l4 == q and l2 == w and l6 == e:
+                        trojki.append([l4, l2, l6])
 
-                    elif l4 == q and l5 == w and l1 ==e:trojki.append([l4, l5,l1])
-                    elif l4 == q and l5 == w and l2 ==e:trojki.append([l4, l5,l2])
-                    elif l4 == q and l5 == w and l3 ==e:trojki.append([l4, l5,l3])
-                    elif l4 == q and l5 == w and l6 ==e:trojki.append([l4, l5,l6])
+                    elif l4 == q and l3 == w and l1 == e:
+                        trojki.append([l4, l3, l1])
+                    elif l4 == q and l3 == w and l2 == e:
+                        trojki.append([l4, l3, l2])
+                    elif l4 == q and l3 == w and l5 == e:
+                        trojki.append([l4, l3, l5])
+                    elif l4 == q and l3 == w and l6 == e:
+                        trojki.append([l4, l3, l6])
 
-                    elif l4 == q and l6 == w and l1 ==e:trojki.append([l4, l6,l1])
-                    elif l4 == q and l6 == w and l2 ==e:trojki.append([l4, l6,l2])
-                    elif l4 == q and l6 == w and l3 ==e:trojki.append([l4, l6,l3])
-                    elif l4 == q and l6 == w and l5 ==e:trojki.append([l4, l6,l5])
+                    elif l4 == q and l5 == w and l1 == e:
+                        trojki.append([l4, l5, l1])
+                    elif l4 == q and l5 == w and l2 == e:
+                        trojki.append([l4, l5, l2])
+                    elif l4 == q and l5 == w and l3 == e:
+                        trojki.append([l4, l5, l3])
+                    elif l4 == q and l5 == w and l6 == e:
+                        trojki.append([l4, l5, l6])
 
-                    elif l5 == q and l1 == w and l2 ==e:trojki.append([l5, l1,l2])
-                    elif l5 == q and l1 == w and l3 ==e:trojki.append([l5, l1,l3])
-                    elif l5 == q and l1 == w and l4 ==e:trojki.append([l5, l1,l4])
-                    elif l5 == q and l1 == w and l6 ==e:trojki.append([l5, l1,l6])
+                    elif l4 == q and l6 == w and l1 == e:
+                        trojki.append([l4, l6, l1])
+                    elif l4 == q and l6 == w and l2 == e:
+                        trojki.append([l4, l6, l2])
+                    elif l4 == q and l6 == w and l3 == e:
+                        trojki.append([l4, l6, l3])
+                    elif l4 == q and l6 == w and l5 == e:
+                        trojki.append([l4, l6, l5])
 
-                    elif l5 == q and l2 == w and l1 ==e:trojki.append([l5, l2,l1])
-                    elif l5 == q and l2 == w and l3 ==e:trojki.append([l5, l2,l3])
-                    elif l5 == q and l2 == w and l4 ==e:trojki.append([l5, l2,l4])
-                    elif l5 == q and l2 == w and l6 ==e:trojki.append([l5, l2,l6])
+                    elif l5 == q and l1 == w and l2 == e:
+                        trojki.append([l5, l1, l2])
+                    elif l5 == q and l1 == w and l3 == e:
+                        trojki.append([l5, l1, l3])
+                    elif l5 == q and l1 == w and l4 == e:
+                        trojki.append([l5, l1, l4])
+                    elif l5 == q and l1 == w and l6 == e:
+                        trojki.append([l5, l1, l6])
 
-                    elif l5 == q and l3 == w and l1 ==e:trojki.append([l5, l3,l1])
-                    elif l5 == q and l3 == w and l2 ==e:trojki.append([l5, l3,l2])
-                    elif l5 == q and l3 == w and l4 ==e:trojki.append([l5, l3,l4])
-                    elif l5 == q and l3 == w and l6 ==e:trojki.append([l5, l3,l6])
+                    elif l5 == q and l2 == w and l1 == e:
+                        trojki.append([l5, l2, l1])
+                    elif l5 == q and l2 == w and l3 == e:
+                        trojki.append([l5, l2, l3])
+                    elif l5 == q and l2 == w and l4 == e:
+                        trojki.append([l5, l2, l4])
+                    elif l5 == q and l2 == w and l6 == e:
+                        trojki.append([l5, l2, l6])
 
-                    elif l5 == q and l4 == w and l1 ==e:trojki.append([l5, l4,l1])
-                    elif l5 == q and l4 == w and l2 ==e:trojki.append([l5, l4,l2])
-                    elif l5 == q and l4 == w and l3 ==e:trojki.append([l5, l4,l3])
-                    elif l5 == q and l4 == w and l6 ==e:trojki.append([l5, l4,l6])
+                    elif l5 == q and l3 == w and l1 == e:
+                        trojki.append([l5, l3, l1])
+                    elif l5 == q and l3 == w and l2 == e:
+                        trojki.append([l5, l3, l2])
+                    elif l5 == q and l3 == w and l4 == e:
+                        trojki.append([l5, l3, l4])
+                    elif l5 == q and l3 == w and l6 == e:
+                        trojki.append([l5, l3, l6])
 
-                    elif l5 == q and l6 == w and l1 ==e:trojki.append([l5, l6,l1])
-                    elif l5 == q and l6 == w and l2 ==e:trojki.append([l5, l6,l2])
-                    elif l5 == q and l6 == w and l3 ==e:trojki.append([l5, l6,l3])
-                    elif l5 == q and l6 == w and l4 ==e:trojki.append([l5, l6,l4])
+                    elif l5 == q and l4 == w and l1 == e:
+                        trojki.append([l5, l4, l1])
+                    elif l5 == q and l4 == w and l2 == e:
+                        trojki.append([l5, l4, l2])
+                    elif l5 == q and l4 == w and l3 == e:
+                        trojki.append([l5, l4, l3])
+                    elif l5 == q and l4 == w and l6 == e:
+                        trojki.append([l5, l4, l6])
 
-                    elif l6 == q and l1 == w and l2 ==e:trojki.append([l6, l1,l2])
-                    elif l6 == q and l1 == w and l3 ==e:trojki.append([l6, l1,l3])
-                    elif l6 == q and l1 == w and l4 ==e:trojki.append([l6, l1,l4])
-                    elif l6 == q and l1 == w and l5 ==e:trojki.append([l6, l1,l5])
+                    elif l5 == q and l6 == w and l1 == e:
+                        trojki.append([l5, l6, l1])
+                    elif l5 == q and l6 == w and l2 == e:
+                        trojki.append([l5, l6, l2])
+                    elif l5 == q and l6 == w and l3 == e:
+                        trojki.append([l5, l6, l3])
+                    elif l5 == q and l6 == w and l4 == e:
+                        trojki.append([l5, l6, l4])
 
-                    elif l6 == q and l2 == w and l1 ==e:trojki.append([l6, l2,l1])
-                    elif l6 == q and l2 == w and l3 ==e:trojki.append([l6, l2,l3])
-                    elif l6 == q and l2 == w and l4 ==e:trojki.append([l6, l2,l4])
-                    elif l6 == q and l2 == w and l5 ==e:trojki.append([l6, l2,l5])
+                    elif l6 == q and l1 == w and l2 == e:
+                        trojki.append([l6, l1, l2])
+                    elif l6 == q and l1 == w and l3 == e:
+                        trojki.append([l6, l1, l3])
+                    elif l6 == q and l1 == w and l4 == e:
+                        trojki.append([l6, l1, l4])
+                    elif l6 == q and l1 == w and l5 == e:
+                        trojki.append([l6, l1, l5])
 
-                    elif l6 == q and l3 == w and l1 ==e:trojki.append([l6, l3,l1])
-                    elif l6 == q and l3 == w and l2 ==e:trojki.append([l6, l3,l2])
-                    elif l6 == q and l3 == w and l4 ==e:trojki.append([l6, l3,l4])
-                    elif l6 == q and l3 == w and l5 ==e:trojki.append([l6, l3,l5])
+                    elif l6 == q and l2 == w and l1 == e:
+                        trojki.append([l6, l2, l1])
+                    elif l6 == q and l2 == w and l3 == e:
+                        trojki.append([l6, l2, l3])
+                    elif l6 == q and l2 == w and l4 == e:
+                        trojki.append([l6, l2, l4])
+                    elif l6 == q and l2 == w and l5 == e:
+                        trojki.append([l6, l2, l5])
 
-                    elif l6 == q and l4 == w and l1 ==e:trojki.append([l6, l4,l1])
-                    elif l6 == q and l4 == w and l2 ==e:trojki.append([l6, l4,l2])
-                    elif l6 == q and l4 == w and l3 ==e:trojki.append([l6, l4,l3])
-                    elif l6 == q and l4 == w and l5 ==e:trojki.append([l6, l4,l5])
+                    elif l6 == q and l3 == w and l1 == e:
+                        trojki.append([l6, l3, l1])
+                    elif l6 == q and l3 == w and l2 == e:
+                        trojki.append([l6, l3, l2])
+                    elif l6 == q and l3 == w and l4 == e:
+                        trojki.append([l6, l3, l4])
+                    elif l6 == q and l3 == w and l5 == e:
+                        trojki.append([l6, l3, l5])
 
-                    elif l6 == q and l5 == w and l1 ==e:trojki.append([l6, l5,l1])
-                    elif l6 == q and l5 == w and l2 ==e:trojki.append([l6, l5,l2])
-                    elif l6 == q and l5 == w and l3 ==e:trojki.append([l6, l5,l3])
-                    elif l6 == q and l5 == w and l4 ==e:trojki.append([l4, l5,l4])
+                    elif l6 == q and l4 == w and l1 == e:
+                        trojki.append([l6, l4, l1])
+                    elif l6 == q and l4 == w and l2 == e:
+                        trojki.append([l6, l4, l2])
+                    elif l6 == q and l4 == w and l3 == e:
+                        trojki.append([l6, l4, l3])
+                    elif l6 == q and l4 == w and l5 == e:
+                        trojki.append([l6, l4, l5])
 
+                    elif l6 == q and l5 == w and l1 == e:
+                        trojki.append([l6, l5, l1])
+                    elif l6 == q and l5 == w and l2 == e:
+                        trojki.append([l6, l5, l2])
+                    elif l6 == q and l5 == w and l3 == e:
+                        trojki.append([l6, l5, l3])
+                    elif l6 == q and l5 == w and l4 == e:
+                        trojki.append([l4, l5, l4])
+
+        
+        conn.close()
         trojki.sort()
         liczbaTrojek = len(trojki)
 
@@ -990,10 +1301,9 @@ class Program:
                 for y in range(1, 50):
                     licznik = trojki.count([r, t, y])
                     listaT.append([licznik, r, t, y])
-        
 
         listaT.sort()
-        
+
         r = len(listaT)
         r = r-1
         t = r-20
@@ -1005,8 +1315,10 @@ class Program:
             liczbaPara3 = (listaT[r][3])
             r -= 1
 
-            tk.Label(self.ramka1, text="("+str(liczbaPara1)+" - "+str(liczbaPara2) + " - "+str(liczbaPara3)+")", font=("Arial", 12), bg="#ADD8E6").place(x=40, y=ypolozenie)
-            tk.Label(self.ramka1, text="--- "+str(losowanie)+" razy", font=("Arial", 12), bg="#ADD8E6").place(x=140, y=ypolozenie)
+            tk.Label(self.ramka1, text="("+str(liczbaPara1)+" - "+str(liczbaPara2) + " - " +
+                     str(liczbaPara3)+")", font=("Arial", 12), bg="#ADD8E6").place(x=40, y=ypolozenie)
+            tk.Label(self.ramka1, text="--- "+str(losowanie)+" razy",
+                     font=("Arial", 12), bg="#ADD8E6").place(x=140, y=ypolozenie)
             ypolozenie += 25
 
         r = len(listaT)
@@ -1020,8 +1332,10 @@ class Program:
             liczbaPara3 = (listaT[r][3])
             r -= 1
 
-            tk.Label(self.ramka1, text="("+str(liczbaPara1)+" - "+str(liczbaPara2) + " - "+str(liczbaPara3)+")", font=("Arial", 12), bg="#ADD8E6").place(x=240, y=ypolozenie)
-            tk.Label(self.ramka1, text="--- "+str(losowanie)+" razy", font=("Arial", 12), bg="#ADD8E6").place(x=340, y=ypolozenie)
+            tk.Label(self.ramka1, text="("+str(liczbaPara1)+" - "+str(liczbaPara2) + " - " +
+                     str(liczbaPara3)+")", font=("Arial", 12), bg="#ADD8E6").place(x=240, y=ypolozenie)
+            tk.Label(self.ramka1, text="--- "+str(losowanie)+" razy",
+                     font=("Arial", 12), bg="#ADD8E6").place(x=340, y=ypolozenie)
             ypolozenie += 25
 
         r = len(listaT)
@@ -1035,8 +1349,10 @@ class Program:
             liczbaPara3 = (listaT[r][3])
             r -= 1
 
-            tk.Label(self.ramka1, text="("+str(liczbaPara1)+" - "+str(liczbaPara2) + " - "+str(liczbaPara3)+")", font=("Arial", 12), bg="#ADD8E6").place(x=440, y=ypolozenie)
-            tk.Label(self.ramka1, text="--- "+str(losowanie)+" razy", font=("Arial", 12), bg="#ADD8E6").place(x=540, y=ypolozenie)
+            tk.Label(self.ramka1, text="("+str(liczbaPara1)+" - "+str(liczbaPara2) + " - " +
+                     str(liczbaPara3)+")", font=("Arial", 12), bg="#ADD8E6").place(x=440, y=ypolozenie)
+            tk.Label(self.ramka1, text="--- "+str(losowanie)+" razy",
+                     font=("Arial", 12), bg="#ADD8E6").place(x=540, y=ypolozenie)
             ypolozenie += 25
 
         but = tk.Button(self.ramka1, text="zamknij to okno",
@@ -1049,7 +1365,7 @@ class Program:
     def analiza_par(self):
         self.ramka1 = Frame(root,  height=596, width=650, bg="#FAFAD2")
         self.ramka1.pack(padx=5, pady=5, side=RIGHT)
-        
+
         pary = []
 
         conn = sqlite3.connect('baza.db')
@@ -1077,36 +1393,62 @@ class Program:
 
             for i in range(1, 50):
                 for j in range(1, 50):
-                    if liczba_1 == i and liczba_2 == j: pary.append([liczba_1, liczba_2])
-                    elif liczba_1 == i and liczba_3 == j: pary.append([liczba_1, liczba_3])
-                    elif liczba_1 == i and liczba_4 == j: pary.append([liczba_1, liczba_4])
-                    elif liczba_1 == i and liczba_5 == j:pary.append([liczba_1, liczba_5])
-                    elif liczba_1 == i and liczba_6 == j:pary.append([liczba_1, liczba_6])
+                    if liczba_1 == i and liczba_2 == j:
+                        pary.append([liczba_1, liczba_2])
+                    elif liczba_1 == i and liczba_3 == j:
+                        pary.append([liczba_1, liczba_3])
+                    elif liczba_1 == i and liczba_4 == j:
+                        pary.append([liczba_1, liczba_4])
+                    elif liczba_1 == i and liczba_5 == j:
+                        pary.append([liczba_1, liczba_5])
+                    elif liczba_1 == i and liczba_6 == j:
+                        pary.append([liczba_1, liczba_6])
 
-                    elif liczba_2 == i and liczba_1 == j:pary.append([liczba_2, liczba_1])
-                    elif liczba_2 == i and liczba_3 == j:pary.append([liczba_2, liczba_3])
-                    elif liczba_2 == i and liczba_4 == j:pary.append([liczba_2, liczba_4])
-                    elif liczba_2 == i and liczba_5 == j:pary.append([liczba_2, liczba_5])
-                    elif liczba_2 == i and liczba_6 == j:pary.append([liczba_2, liczba_6])
+                    elif liczba_2 == i and liczba_1 == j:
+                        pary.append([liczba_2, liczba_1])
+                    elif liczba_2 == i and liczba_3 == j:
+                        pary.append([liczba_2, liczba_3])
+                    elif liczba_2 == i and liczba_4 == j:
+                        pary.append([liczba_2, liczba_4])
+                    elif liczba_2 == i and liczba_5 == j:
+                        pary.append([liczba_2, liczba_5])
+                    elif liczba_2 == i and liczba_6 == j:
+                        pary.append([liczba_2, liczba_6])
 
-                    elif liczba_3 == i and liczba_1 == j:pary.append([liczba_3, liczba_1])
-                    elif liczba_3 == i and liczba_2 == j:pary.append([liczba_3, liczba_2])
-                    elif liczba_3 == i and liczba_4 == j:pary.append([liczba_3, liczba_4])
-                    elif liczba_3 == i and liczba_5 == j:pary.append([liczba_3, liczba_5])
-                    elif liczba_3 == i and liczba_6 == j:pary.append([liczba_3, liczba_6])
+                    elif liczba_3 == i and liczba_1 == j:
+                        pary.append([liczba_3, liczba_1])
+                    elif liczba_3 == i and liczba_2 == j:
+                        pary.append([liczba_3, liczba_2])
+                    elif liczba_3 == i and liczba_4 == j:
+                        pary.append([liczba_3, liczba_4])
+                    elif liczba_3 == i and liczba_5 == j:
+                        pary.append([liczba_3, liczba_5])
+                    elif liczba_3 == i and liczba_6 == j:
+                        pary.append([liczba_3, liczba_6])
 
-                    elif liczba_4 == i and liczba_1 == j:pary.append([liczba_4, liczba_1])
-                    elif liczba_4 == i and liczba_2 == j:pary.append([liczba_4, liczba_2])
-                    elif liczba_4 == i and liczba_3 == j:pary.append([liczba_4, liczba_3])
-                    elif liczba_4 == i and liczba_5 == j:pary.append([liczba_4, liczba_5])
-                    elif liczba_4 == i and liczba_6 == j:pary.append([liczba_4, liczba_6])
+                    elif liczba_4 == i and liczba_1 == j:
+                        pary.append([liczba_4, liczba_1])
+                    elif liczba_4 == i and liczba_2 == j:
+                        pary.append([liczba_4, liczba_2])
+                    elif liczba_4 == i and liczba_3 == j:
+                        pary.append([liczba_4, liczba_3])
+                    elif liczba_4 == i and liczba_5 == j:
+                        pary.append([liczba_4, liczba_5])
+                    elif liczba_4 == i and liczba_6 == j:
+                        pary.append([liczba_4, liczba_6])
 
-                    elif liczba_5 == i and liczba_1 == j:pary.append([liczba_5, liczba_1])
-                    elif liczba_5 == i and liczba_2 == j:pary.append([liczba_5, liczba_2])
-                    elif liczba_5 == i and liczba_3 == j:pary.append([liczba_5, liczba_3])
-                    elif liczba_5 == i and liczba_4 == j:pary.append([liczba_5, liczba_4])
-                    elif liczba_5 == i and liczba_6 == j:pary.append([liczba_5, liczba_6])
+                    elif liczba_5 == i and liczba_1 == j:
+                        pary.append([liczba_5, liczba_1])
+                    elif liczba_5 == i and liczba_2 == j:
+                        pary.append([liczba_5, liczba_2])
+                    elif liczba_5 == i and liczba_3 == j:
+                        pary.append([liczba_5, liczba_3])
+                    elif liczba_5 == i and liczba_4 == j:
+                        pary.append([liczba_5, liczba_4])
+                    elif liczba_5 == i and liczba_6 == j:
+                        pary.append([liczba_5, liczba_6])
 
+        conn.close()
         pary.sort()
         liczbaPary = len(pary)
 
@@ -1121,49 +1463,53 @@ class Program:
         r = r-1
         t = r-20
         ypolozenie = 10
-        for i in range(r,t,-1):
+        for i in range(r, t, -1):
             losowanie = (listaP[r][0])
             liczbaPara1 = (listaP[r][1])
             liczbaPara2 = (listaP[r][2])
             r -= 1
 
-            tk.Label(self.ramka1, text="("+str(liczbaPara1)+" - "+str(liczbaPara2) +")", font=("Arial", 12), bg="#FAFAD2").place(x=40, y=ypolozenie)
-            tk.Label(self.ramka1, text=" --- "+str(losowanie), font=("Arial", 12), bg="#FAFAD2").place(x=110, y=ypolozenie)
+            tk.Label(self.ramka1, text="("+str(liczbaPara1)+" - "+str(liczbaPara2) + ")",
+                     font=("Arial", 12), bg="#FAFAD2").place(x=40, y=ypolozenie)
+            tk.Label(self.ramka1, text=" --- "+str(losowanie),
+                     font=("Arial", 12), bg="#FAFAD2").place(x=110, y=ypolozenie)
             ypolozenie += 25
 
         r = len(listaP)
         r = r-21
         t = r-20
         ypolozenie = 10
-        for i in range(r,t,-1):
+        for i in range(r, t, -1):
             losowanie = (listaP[r][0])
             liczbaPara1 = (listaP[r][1])
             liczbaPara2 = (listaP[r][2])
             r -= 1
 
-            tk.Label(self.ramka1, text="("+str(liczbaPara1)+" - "+str(liczbaPara2) +")", font=("Arial", 12), bg="#FAFAD2").place(x=240, y=ypolozenie)
-            tk.Label(self.ramka1, text=" --- "+str(losowanie), font=("Arial", 12), bg="#FAFAD2").place(x=310, y=ypolozenie)
+            tk.Label(self.ramka1, text="("+str(liczbaPara1)+" - "+str(liczbaPara2) + ")",
+                     font=("Arial", 12), bg="#FAFAD2").place(x=240, y=ypolozenie)
+            tk.Label(self.ramka1, text=" --- "+str(losowanie),
+                     font=("Arial", 12), bg="#FAFAD2").place(x=310, y=ypolozenie)
             ypolozenie += 25
 
         r = len(listaP)
         r = r-41
         t = r-20
         ypolozenie = 10
-        for i in range(r,t,-1):
+        for i in range(r, t, -1):
             losowanie = (listaP[r][0])
             liczbaPara1 = (listaP[r][1])
             liczbaPara2 = (listaP[r][2])
             r -= 1
 
-            tk.Label(self.ramka1, text="("+str(liczbaPara1)+" - "+str(liczbaPara2) +")", font=("Arial", 12), bg="#FAFAD2").place(x=440, y=ypolozenie)
-            tk.Label(self.ramka1, text=" --- "+str(losowanie), font=("Arial", 12), bg="#FAFAD2").place(x=510, y=ypolozenie)
+            tk.Label(self.ramka1, text="("+str(liczbaPara1)+" - "+str(liczbaPara2) + ")",
+                     font=("Arial", 12), bg="#FAFAD2").place(x=440, y=ypolozenie)
+            tk.Label(self.ramka1, text=" --- "+str(losowanie),
+                     font=("Arial", 12), bg="#FAFAD2").place(x=510, y=ypolozenie)
             ypolozenie += 25
 
         but = tk.Button(self.ramka1, text="zamknij to okno",
                         bg="#DC143C", command=self.zamknij_okno)
         but.place(x=320, y=530)
-
-
 
 
 # definicja sprawdza powtarzające się liczby
@@ -1172,7 +1518,7 @@ class Program:
     def liczby_powtorzone(self):
         self.ramka1 = Frame(root, height=550, width=600, bg="#E9967A")
         self.ramka1.pack(padx=5, pady=5, side=TOP)
-        
+
         lista = []
         liczenie = []
 
@@ -1206,62 +1552,111 @@ class Program:
             lista.append(liczba_5)
             lista.append(liczba_6)
 
-        l1 = lista.count(1); liczenie.append([l1, 1])
-        l2 = lista.count(2); liczenie.append([l2,2])
-        l3 = lista.count(3); liczenie.append([l3,3])
-        l4 = lista.count(4);liczenie.append([l4,4])
-        l5 = lista.count(5);liczenie.append([l5,5])
-        l6 = lista.count(6);liczenie.append([l6,6])
-        l7 = lista.count(7);liczenie.append([l7,7])
-        l8 = lista.count(8);liczenie.append([l8,8])
-        l9 = lista.count(9);liczenie.append([l9,9])
-        l10 = lista.count(10);liczenie.append([l10,10])
+        l1 = lista.count(1)
+        liczenie.append([l1, 1])
+        l2 = lista.count(2)
+        liczenie.append([l2, 2])
+        l3 = lista.count(3)
+        liczenie.append([l3, 3])
+        l4 = lista.count(4)
+        liczenie.append([l4, 4])
+        l5 = lista.count(5)
+        liczenie.append([l5, 5])
+        l6 = lista.count(6)
+        liczenie.append([l6, 6])
+        l7 = lista.count(7)
+        liczenie.append([l7, 7])
+        l8 = lista.count(8)
+        liczenie.append([l8, 8])
+        l9 = lista.count(9)
+        liczenie.append([l9, 9])
+        l10 = lista.count(10)
+        liczenie.append([l10, 10])
 
-        l11 = lista.count(11);liczenie.append([l11,11])
-        l12 = lista.count(12);liczenie.append([l12,12])
-        l13 = lista.count(13);liczenie.append([l13,13])
-        l14 = lista.count(14);liczenie.append([l14,14])
-        l15 = lista.count(15);liczenie.append([l15,15])
-        l16 = lista.count(16);liczenie.append([l16,16])
-        l17 = lista.count(17);liczenie.append([l17,17])
-        l18 = lista.count(18);liczenie.append([l18,18])
-        l19 = lista.count(19);liczenie.append([l19,19])
-        l20 = lista.count(20);liczenie.append([l20,20])
+        l11 = lista.count(11)
+        liczenie.append([l11, 11])
+        l12 = lista.count(12)
+        liczenie.append([l12, 12])
+        l13 = lista.count(13)
+        liczenie.append([l13, 13])
+        l14 = lista.count(14)
+        liczenie.append([l14, 14])
+        l15 = lista.count(15)
+        liczenie.append([l15, 15])
+        l16 = lista.count(16)
+        liczenie.append([l16, 16])
+        l17 = lista.count(17)
+        liczenie.append([l17, 17])
+        l18 = lista.count(18)
+        liczenie.append([l18, 18])
+        l19 = lista.count(19)
+        liczenie.append([l19, 19])
+        l20 = lista.count(20)
+        liczenie.append([l20, 20])
 
-        l21 = lista.count(21);liczenie.append([l21,21])
-        l22 = lista.count(22);liczenie.append([l22,22])
-        l23 = lista.count(23);liczenie.append([l23,23])
-        l24 = lista.count(24);liczenie.append([l24,24])
-        l25 = lista.count(25);liczenie.append([l25,25])
-        l26 = lista.count(26);liczenie.append([l26,26])
-        l27 = lista.count(27);liczenie.append([l27,27])
-        l28 = lista.count(28);liczenie.append([l28,28])
-        l29 = lista.count(29);liczenie.append([l29,29])
-        l30 = lista.count(30);liczenie.append([l30,30])
+        l21 = lista.count(21)
+        liczenie.append([l21, 21])
+        l22 = lista.count(22)
+        liczenie.append([l22, 22])
+        l23 = lista.count(23)
+        liczenie.append([l23, 23])
+        l24 = lista.count(24)
+        liczenie.append([l24, 24])
+        l25 = lista.count(25)
+        liczenie.append([l25, 25])
+        l26 = lista.count(26)
+        liczenie.append([l26, 26])
+        l27 = lista.count(27)
+        liczenie.append([l27, 27])
+        l28 = lista.count(28)
+        liczenie.append([l28, 28])
+        l29 = lista.count(29)
+        liczenie.append([l29, 29])
+        l30 = lista.count(30)
+        liczenie.append([l30, 30])
 
-        l31 = lista.count(31);liczenie.append([l31,31])
-        l32 = lista.count(32);liczenie.append([l32,32])
-        l33 = lista.count(33);liczenie.append([l33,33])
-        l34 = lista.count(34);liczenie.append([l34,34])
-        l35 = lista.count(35);liczenie.append([l35,35])
-        l36 = lista.count(36);liczenie.append([l36,36])
-        l37 = lista.count(37);liczenie.append([l37,37])
-        l38 = lista.count(38);liczenie.append([l38,38])
-        l39 = lista.count(39);liczenie.append([l39,39])
-        l40 = lista.count(40);liczenie.append([l40,40])
+        l31 = lista.count(31)
+        liczenie.append([l31, 31])
+        l32 = lista.count(32)
+        liczenie.append([l32, 32])
+        l33 = lista.count(33)
+        liczenie.append([l33, 33])
+        l34 = lista.count(34)
+        liczenie.append([l34, 34])
+        l35 = lista.count(35)
+        liczenie.append([l35, 35])
+        l36 = lista.count(36)
+        liczenie.append([l36, 36])
+        l37 = lista.count(37)
+        liczenie.append([l37, 37])
+        l38 = lista.count(38)
+        liczenie.append([l38, 38])
+        l39 = lista.count(39)
+        liczenie.append([l39, 39])
+        l40 = lista.count(40)
+        liczenie.append([l40, 40])
 
-        l41 = lista.count(41);liczenie.append([l41,41])
-        l42 = lista.count(42);liczenie.append([l42,42])
-        l43 = lista.count(43);liczenie.append([l43,43])
-        l44 = lista.count(44);liczenie.append([l44,44])
-        l45 = lista.count(45);liczenie.append([l45,45])
-        l46 = lista.count(46);liczenie.append([l46,46])
-        l47 = lista.count(47);liczenie.append([l47,47])
-        l48 = lista.count(48);liczenie.append([l48,48])
-        l49 = lista.count(49);liczenie.append([l49,49])
+        l41 = lista.count(41)
+        liczenie.append([l41, 41])
+        l42 = lista.count(42)
+        liczenie.append([l42, 42])
+        l43 = lista.count(43)
+        liczenie.append([l43, 43])
+        l44 = lista.count(44)
+        liczenie.append([l44, 44])
+        l45 = lista.count(45)
+        liczenie.append([l45, 45])
+        l46 = lista.count(46)
+        liczenie.append([l46, 46])
+        l47 = lista.count(47)
+        liczenie.append([l47, 47])
+        l48 = lista.count(48)
+        liczenie.append([l48, 48])
+        l49 = lista.count(49)
+        liczenie.append([l49, 49])
 
         liczenie.sort()
-        
+
         conn.close()
         ypolozenie = 5
         xpolozenie = 5
@@ -1270,35 +1665,43 @@ class Program:
         for i in range(48, 30, -1):
             iloscLosowan = (liczenie[i][0])
             liczbaLosowana = (liczenie[i][1])
-            
-            tk.Label(self.ramka1, text=liczbaLosowana, font=("Arial", 12), bg="green").place(x=20, y=ypolozenie)
-            tk.Label(self.ramka1, text=" -- ", font=("Arial", 12), bg="#E9967A").place(x=50, y=ypolozenie)
-            tk.Label(self.ramka1, text=str(iloscLosowan), font=("Arial", 12), bg="#FAFAD2").place(x=75, y=ypolozenie)
+
+            tk.Label(self.ramka1, text=liczbaLosowana, font=(
+                "Arial", 12), bg="green").place(x=20, y=ypolozenie)
+            tk.Label(self.ramka1, text=" -- ", font=("Arial", 12),
+                     bg="#E9967A").place(x=50, y=ypolozenie)
+            tk.Label(self.ramka1, text=str(iloscLosowan), font=(
+                "Arial", 12), bg="#FAFAD2").place(x=75, y=ypolozenie)
             ypolozenie += 27
 
         for j in range(30, 12, -1):
             iloscLosowan = (liczenie[j][0])
             liczbaLosowana = (liczenie[j][1])
-            
-            tk.Label(self.ramka1, text=liczbaLosowana, font=("Arial", 12), bg="green").place(x=170, y=xpolozenie)
-            tk.Label(self.ramka1, text=" -- ", font=("Arial", 12), bg="#E9967A").place(x=200, y=xpolozenie)
-            tk.Label(self.ramka1, text=str(iloscLosowan), font=("Arial", 12), bg="#FAFAD2").place(x=225, y=xpolozenie)
+
+            tk.Label(self.ramka1, text=liczbaLosowana, font=(
+                "Arial", 12), bg="green").place(x=170, y=xpolozenie)
+            tk.Label(self.ramka1, text=" -- ", font=("Arial", 12),
+                     bg="#E9967A").place(x=200, y=xpolozenie)
+            tk.Label(self.ramka1, text=str(iloscLosowan), font=(
+                "Arial", 12), bg="#FAFAD2").place(x=225, y=xpolozenie)
             xpolozenie += 27
 
         for k in range(12, -1, -1):
             iloscLosowan = (liczenie[k][0])
             liczbaLosowana = (liczenie[k][1])
-            
-            tk.Label(self.ramka1, text=liczbaLosowana, font=("Arial", 12), bg="green").place(x=320, y=zpolozenie)
-            tk.Label(self.ramka1, text=" -- ", font=("Arial", 12), bg="#E9967A").place(x=350, y=zpolozenie)
-            tk.Label(self.ramka1, text=str(iloscLosowan), font=("Arial", 12), bg="#FAFAD2").place(x=375, y=zpolozenie)
+
+            tk.Label(self.ramka1, text=liczbaLosowana, font=(
+                "Arial", 12), bg="green").place(x=320, y=zpolozenie)
+            tk.Label(self.ramka1, text=" -- ", font=("Arial", 12),
+                     bg="#E9967A").place(x=350, y=zpolozenie)
+            tk.Label(self.ramka1, text=str(iloscLosowan), font=(
+                "Arial", 12), bg="#FAFAD2").place(x=375, y=zpolozenie)
             zpolozenie += 27
 
         but = tk.Button(self.ramka1, text="zamknij to okno",
                         bg="#DC143C", command=self.zamknij_okno)
         but.place(x=420, y=500)
 
-        
 
 # definicja rejestracji użytkownika
 
