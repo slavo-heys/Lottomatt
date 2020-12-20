@@ -10,6 +10,7 @@ from tkinter.messagebox import showinfo
 from operator import itemgetter
 import requests
 import json
+import csv
 
 # Tworzenie bazy , jeśli nie istnieje
 conn = sqlite3.connect('baza.db')
@@ -52,14 +53,14 @@ class Program:
 
             new_item = Menu(menu)
             menu.add_cascade(label="Program", menu=new_item)
-            new_item.add_command(
-                label="rejestracja użytkownika", command=self.rejestracja_usera)
-            new_item.add_separator()
-            new_item.add_command(label="wyjście z programu", command="")
+            #new_item.add_command(label="rejestracja użytkownika", command=self.rejestracja_usera)
+            #new_item.add_separator()
+            new_item.add_command(label="wyjście z programu", command=self.zamknij_program)
 
-            new_obsl = Menu(menu)
-            menu.add_cascade(label="Help", menu=new_obsl)
-            new_obsl.add_command(label="pomoc", command="")
+            #new_obsl = Menu(menu)
+            #menu.add_cascade(label="Inne", menu=new_obsl)
+            #new_obsl.add_command(label="pomoc", command="")
+            #new_item.add_separator()
 
             root.config(menu=menu)
 
@@ -68,20 +69,21 @@ class Program:
         self.ramka = Frame(root, height=596, width=160, bg="#FAEBD7")
         self.ramka.pack(padx=5, pady=5, side=LEFT)
 
-        linia = tk.Label(self.ramka, text="moja ramka", justify=LEFT)
-        linia.place(x=500, y=10)
-
         but0 = tk.Button(self.ramka, text="Ostatnie losowanie",
                          width=18, command=self.wyniki_losowania)
         but0.place(x=10, y=10)
 
+        but7 = tk.Button(self.ramka, text="Import z pliku csv",
+                         width=18, command=self.update)
+        but7.place(x=10, y=40)
+
         but1 = tk.Button(self.ramka, text="Dodaj swoje liczby ",
                          width=18, command=self.dodaj_liczby)
-        but1.place(x=10, y=40)
+        but1.place(x=10, y=70)
 
         but2 = tk.Button(self.ramka, text="Analiza liczb",
                          width=18, command=self.liczby_powtorzone)
-        but2.place(x=10, y=130)
+        but2.place(x=10, y=160)
 
         but3 = tk.Button(self.ramka, text="Analiza par",
                          width=18, command=self.analiza_par)
@@ -97,15 +99,50 @@ class Program:
 
         but4 = tk.Button(self.ramka, text="Sprawdź moje liczby",
                          width=18, command="")
-        but4.place(x=10, y=70)
+        but4.place(x=10, y=100)
 
         but4 = tk.Button(self.ramka, text="Wyjście z programu",
                          bg="#F08080", width=18, command=self.zamknij_program)
         but4.place(x=10, y=540)
 
+# definicja aktualizacji z pliku csv    
+    def update(self):
+        conn = sqlite3.connect('baza.db')
+        c = conn.cursor()
+        c.execute("Delete from lotto")
+
+        with open('lotto.csv', 'r', encoding='utf-8') as csvfile:
+            csvreader = csv.reader(csvfile, delimiter=',')
+
+            for row in csvreader:
+                losowanie = (row[0])
+                dataLos = (row[1]) 
+                licz1 = (row[2])
+                licz2 = (row[3])
+                licz3 = (row[4])
+                licz4 = (row[5])
+                licz5 = (row[6])
+                licz6 = (row[7]) 
+
+                c.execute("INSERT INTO lotto VALUES(NULL, :nr_losowania, :data, :l1, :l2, :l3, :l4, :l5, :l6)",
+                            {
+                                'nr_losowania': losowanie,
+                                'data': dataLos,
+                                'l1': licz1,
+                                'l2': licz2,
+                                'l3': licz3,
+                                'l4': licz4,
+                                'l5': licz5,
+                                'l6': licz6
+                            })
+        conn.commit()
+        conn.close()
+        self.baza_csv()
+
 # definicja sprawdzania wyników losowania
     def wyniki_losowania(self):
-        r = requests.get('http://serwis.mobilotto.pl/mapi_v6/index.php?json=getGames')
+        r = requests.get(
+            'http://serwis.mobilotto.pl/mapi_v6/index.php?json=getGames')
 
         html_text: str = r.text
         json_text: dict = r.json()
@@ -114,10 +151,10 @@ class Program:
         text = (r.text)
         wynik = json.loads(text)
 
-        b =(wynik['Lotto'])
+        b = (wynik['Lotto'])
         numerki = (b['numerki'])
         liczby_p = numerki.split(',')
-        liczby=[]
+        liczby = []
         liczby.append(int(liczby_p[0]))
         liczby.append(int(liczby_p[1]))
         liczby.append(int(liczby_p[2]))
@@ -130,7 +167,7 @@ class Program:
 
         nrLosowania = (b['num_losowania'])
         data = (b['data_losowania'])
-        data=data[0:10]
+        data = data[0:10]
 
         conn = sqlite3.connect('baza.db')
         c = conn.cursor()
@@ -144,10 +181,12 @@ class Program:
         if numerLosowania == nrLosowania or dataOstatnia == data:
             self.ramka1 = Frame(root,  height=300, width=650, bg="green")
             self.ramka1.pack(padx=5, pady=5, side=TOP)
-            tk.Label(self.ramka1, text = "Losowanie już istnieje w bazie!", font = ("Arial, 14"), bg = "green", fg = "white").place(x=20, y=20)
-            tk.Label(self.ramka1, text = "Ostatnie wyniki Dużego Lotka: "+str(liczby[0])+" , "+str(liczby[1])+" , "+str(liczby[2])+" , "+str(liczby[3])+" , "+str(liczby[4])+" , "+str(liczby[5]), font=("Arial", 14), fg = "white", bg="green").place(x=80, y = 150)
+            tk.Label(self.ramka1, text="Losowanie już istnieje w bazie!", font=(
+                "Arial, 14"), bg="green", fg="white").place(x=20, y=20)
+            tk.Label(self.ramka1, text="Ostatnie wyniki Dużego Lotka: "+str(liczby[0])+" , "+str(liczby[1])+" , "+str(liczby[2])+" , "+str(
+                liczby[3])+" , "+str(liczby[4])+" , "+str(liczby[5]), font=("Arial", 14), fg="white", bg="green").place(x=80, y=150)
             but = tk.Button(self.ramka1, text="zamknij to okno",
-                        bg="#DC143C", command=self.zamknij_okno)
+                            bg="#DC143C", command=self.zamknij_okno)
             but.place(x=260, y=250)
         else:
             conn = sqlite3.connect('baza.db')
@@ -167,15 +206,17 @@ class Program:
             conn.close()
             self.ramka1 = Frame(root,  height=300, width=650, bg="green")
             self.ramka1.pack(padx=5, pady=5, side=TOP)
-            tk.Label(self.ramka1, text = "Losowanie  zapisane!", font = ("Arial, 14"), bg = "green", fg = "white").place(x=20, y=20)
-            tk.Label(self.ramka1, text = "Ostatnie wyniki Dużego Lotka: "+str(liczby[0])+" , "+str(liczby[1])+" , "+str(liczby[2])+" , "+str(liczby[3])+" , "+str(liczby[4])+" , "+str(liczby[5]), font=("Arial", 14), fg = "white", bg="green").place(x=80, y = 150)
+            tk.Label(self.ramka1, text="Losowanie  zapisane!", font=(
+                "Arial, 14"), bg="green", fg="white").place(x=20, y=20)
+            tk.Label(self.ramka1, text="Ostatnie wyniki Dużego Lotka: "+str(liczby[0])+" , "+str(liczby[1])+" , "+str(liczby[2])+" , "+str(
+                liczby[3])+" , "+str(liczby[4])+" , "+str(liczby[5]), font=("Arial", 14), fg="white", bg="green").place(x=80, y=150)
             but = tk.Button(self.ramka1, text="zamknij to okno",
-                        bg="#DC143C", command=self.zamknij_okno)
+                            bg="#DC143C", command=self.zamknij_okno)
             but.place(x=260, y=250)
-    
 
 
 # definicja analizy czworek
+
 
     def analiza_czworek(self):
         self.ramka1 = Frame(root,  height=596, width=650, bg="#ADD8E6")
@@ -988,7 +1029,6 @@ class Program:
 
 # definicja analizy trojek
 
-
     def analiza_trojek(self):
         self.ramka1 = Frame(root,  height=596, width=650, bg="#ADD8E6")
         self.ramka1.pack(padx=5, pady=5, side=RIGHT)
@@ -1290,7 +1330,6 @@ class Program:
                     elif l6 == q and l5 == w and l4 == e:
                         trojki.append([l4, l5, l4])
 
-        
         conn.close()
         trojki.sort()
         liczbaTrojek = len(trojki)
@@ -1361,6 +1400,7 @@ class Program:
 
 
 # definicja analizy par
+
 
     def analiza_par(self):
         self.ramka1 = Frame(root,  height=596, width=650, bg="#FAFAD2")
@@ -1513,7 +1553,6 @@ class Program:
 
 
 # definicja sprawdza powtarzające się liczby
-
 
     def liczby_powtorzone(self):
         self.ramka1 = Frame(root, height=550, width=600, bg="#E9967A")
@@ -1705,6 +1744,7 @@ class Program:
 
 # definicja rejestracji użytkownika
 
+
     def rejestracja_usera(self):
         self.ramka1 = Frame(root,  height=180, width=600, bg="#DDA0DD")
         self.ramka1.pack(padx=5, pady=5, side=TOP)
@@ -1873,6 +1913,9 @@ class Program:
 
     def puste_pole(self):
         showinfo("Uwaga!", "Jedno pole jest puste!")
+
+    def baza_csv(self):
+        showinfo("Informacja", "Plik lotto.csv został zaimportowany!")
 
     def zapisz_do_bazy(self):
         self.dzienLos = self.dzien.get()
