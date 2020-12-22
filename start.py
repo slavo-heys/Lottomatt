@@ -54,13 +54,14 @@ class Program:
             new_item = Menu(menu)
             menu.add_cascade(label="Program", menu=new_item)
             #new_item.add_command(label="rejestracja użytkownika", command=self.rejestracja_usera)
-            #new_item.add_separator()
-            new_item.add_command(label="wyjście z programu", command=self.zamknij_program)
+            # new_item.add_separator()
+            new_item.add_command(label="wyjście z programu",
+                                 command=self.zamknij_program)
 
             #new_obsl = Menu(menu)
             #menu.add_cascade(label="Inne", menu=new_obsl)
             #new_obsl.add_command(label="pomoc", command="")
-            #new_item.add_separator()
+            # new_item.add_separator()
 
             root.config(menu=menu)
 
@@ -98,14 +99,14 @@ class Program:
         but6.place(x=10, y=220)
 
         but4 = tk.Button(self.ramka, text="Sprawdź moje liczby",
-                         width=18, command="")
+                         width=18, command=self.weryfikacja_liczb)
         but4.place(x=10, y=100)
 
         but4 = tk.Button(self.ramka, text="Wyjście z programu",
                          bg="#F08080", width=18, command=self.zamknij_program)
         but4.place(x=10, y=540)
 
-# definicja aktualizacji z pliku csv    
+# definicja aktualizacji z pliku csv
     def update(self):
         conn = sqlite3.connect('baza.db')
         c = conn.cursor()
@@ -116,25 +117,25 @@ class Program:
 
             for row in csvreader:
                 losowanie = (row[0])
-                dataLos = (row[1]) 
+                dataLos = (row[1])
                 licz1 = (row[2])
                 licz2 = (row[3])
                 licz3 = (row[4])
                 licz4 = (row[5])
                 licz5 = (row[6])
-                licz6 = (row[7]) 
+                licz6 = (row[7])
 
                 c.execute("INSERT INTO lotto VALUES(NULL, :nr_losowania, :data, :l1, :l2, :l3, :l4, :l5, :l6)",
-                            {
-                                'nr_losowania': losowanie,
-                                'data': dataLos,
-                                'l1': licz1,
-                                'l2': licz2,
-                                'l3': licz3,
-                                'l4': licz4,
-                                'l5': licz5,
-                                'l6': licz6
-                            })
+                          {
+                              'nr_losowania': losowanie,
+                              'data': dataLos,
+                              'l1': licz1,
+                              'l2': licz2,
+                              'l3': licz3,
+                              'l4': licz4,
+                              'l5': licz5,
+                              'l6': licz6
+                          })
         conn.commit()
         conn.close()
         self.baza_csv()
@@ -161,7 +162,7 @@ class Program:
         liczby.append(int(liczby_p[3]))
         liczby.append(int(liczby_p[4]))
         liczby.append(int(liczby_p[5]))
-        print(liczby)
+        
 
         liczby.sort()
 
@@ -216,7 +217,6 @@ class Program:
 
 
 # definicja analizy czworek
-
 
     def analiza_czworek(self):
         self.ramka1 = Frame(root,  height=596, width=650, bg="#ADD8E6")
@@ -1029,6 +1029,7 @@ class Program:
 
 # definicja analizy trojek
 
+
     def analiza_trojek(self):
         self.ramka1 = Frame(root,  height=596, width=650, bg="#ADD8E6")
         self.ramka1.pack(padx=5, pady=5, side=RIGHT)
@@ -1401,7 +1402,6 @@ class Program:
 
 # definicja analizy par
 
-
     def analiza_par(self):
         self.ramka1 = Frame(root,  height=596, width=650, bg="#FAFAD2")
         self.ramka1.pack(padx=5, pady=5, side=RIGHT)
@@ -1553,6 +1553,7 @@ class Program:
 
 
 # definicja sprawdza powtarzające się liczby
+
 
     def liczby_powtorzone(self):
         self.ramka1 = Frame(root, height=550, width=600, bg="#E9967A")
@@ -1744,7 +1745,6 @@ class Program:
 
 # definicja rejestracji użytkownika
 
-
     def rejestracja_usera(self):
         self.ramka1 = Frame(root,  height=180, width=600, bg="#DDA0DD")
         self.ramka1.pack(padx=5, pady=5, side=TOP)
@@ -1795,103 +1795,6 @@ class Program:
 
     def rejestracja(self):
         self.imieU = self.imie.get()
-
-    def dodaj_losowanie(self):
-        self.ramka1 = Frame(root,  height=596, width=650, bg="#FAFAD2")
-        self.ramka1.pack(padx=5, pady=5, side=TOP)
-
-        # Formularz - dodaj liczby z losowania
-        l1 = tk.Label(self.ramka1, text="Wstaw datę losowania:",
-                      font=("Arial", 13), bg="#FAFAD2")
-        l1.place(x=10, y=10)
-
-        l1a = tk.Label(self.ramka1, text="dd:",
-                       font=("Arial", 13), bg="#FAFAD2")
-        l1a.place(x=200, y=10)
-
-        l1b = tk.Label(self.ramka1, text="mm:",
-                       font=("Arial", 13), bg="#FAFAD2")
-        l1b.place(x=280, y=10)
-
-        l1c = tk.Label(self.ramka1, text="yyyy:",
-                       font=("Arial", 13), bg="#FAFAD2")
-        l1c.place(x=360, y=10)
-
-        l2 = tk.Label(self.ramka1, text="Wstaw numer losowania:",
-                      font=("Arial", 13), bg="#FAFAD2")
-        l2.place(x=10, y=35)
-
-        l3 = tk.Label(self.ramka1, text="Podaj sześć liczb:",
-                      font=("Arial", 13), bg="#FAFAD2")
-        l3.place(x=10, y=70)
-
-        self.dzien = StringVar()
-        self.e1 = tk.Entry(self.ramka1, textvariable=self.dzien,
-                           font=("Arial", 13), width=3)
-        self.e1.place(x=229, y=10)
-
-        self.miesiac = StringVar()
-        self.e1a = tk.Entry(self.ramka1, textvariable=self.miesiac,
-                            font=("Arial", 13), width=3)
-        self.e1a.place(x=316, y=10)
-
-        self.rok = StringVar()
-        self.e1b = tk.Entry(self.ramka1, textvariable=self.rok,
-                            font=("Arial", 13), width=5)
-        self.e1b.place(x=407, y=10)
-
-        self.nLosowania = StringVar()
-        self.e2 = tk.Entry(self.ramka1, textvariable=self.nLosowania,
-                           font=("Arial", 13), width=8)
-        self.e2.place(x=200, y=35)
-
-        self.liczbaJeden = StringVar()
-        self.liczbaDwa = StringVar()
-        self.liczbaTrzy = StringVar()
-        self.liczbaCztery = StringVar()
-        self.liczbaPiec = StringVar()
-        self.liczbaSzesc = StringVar()
-        # liczba1
-        self.e3 = tk.Entry(self.ramka1, textvariable=self.liczbaJeden,
-                           font=("Arial", 13), width=2)
-        self.e3.place(x=200, y=70)
-        # liczba2
-
-        self.e4 = tk.Entry(self.ramka1, textvariable=self.liczbaDwa,
-                           font=("Arial", 13), width=2)
-        self.e4.place(x=230, y=70)
-        # liczba 3
-
-        self.e5 = tk.Entry(self.ramka1, textvariable=self.liczbaTrzy,
-                           font=("Arial", 13), width=2)
-        self.e5.place(x=260, y=70)
-        # liczba 4
-
-        self.e6 = tk.Entry(self.ramka1, textvariable=self.liczbaCztery,
-                           font=("Arial", 13), width=2)
-        self.e6.place(x=290, y=70)
-        # liczba 5
-
-        self.e7 = tk.Entry(self.ramka1, textvariable=self.liczbaPiec,
-                           font=("Arial", 13), width=2)
-        self.e7.place(x=320, y=70)
-        # liczba 6
-
-        self.e8 = tk.Entry(self.ramka1, textvariable=self.liczbaSzesc,
-                           font=("Arial", 13), width=2)
-        self.e8.place(x=350, y=70)
-        # przycisk zapisz do tabli i wyczyść dane
-        przycisk1 = tk.Button(self.ramka1, text="Zapisz do bazy",
-                              bg="#F08080", command=self.zapisz_do_bazy)
-        przycisk1.place(x=310, y=100)
-
-        przycisk2 = tk.Button(self.ramka1, text="Wyczyść dane",
-                              bg="#90EE90", command=self.clear_dane)
-        przycisk2.place(x=210, y=100)
-
-        przycisk3 = tk.Button(self.ramka1, text=" Zamknij to okno",
-                              fg="white", bg="blue", command=self.zamknij_okno)
-        przycisk3.place(x=260, y=160)
 
     def zamknij_okno(self):
         self.ramka1.destroy()
@@ -2096,6 +1999,7 @@ class Program:
         self.piecU = self.liczba5Usera.get()
         self.szescU = self.liczba6Usera.get()
         self.terazRokUser = strftime('%Y')
+        self.terazRokUser = int(self.terazRokUser)
 
         if self.dzienU == "":
             self.puste_pole()
@@ -2174,6 +2078,71 @@ class Program:
 
     def zamknij_program(self):
         root.destroy()
+
+    def weryfikacja_liczb(self):
+        self.ramka1 = Frame(root,  height=550, width=600, bg="#F0E68C")
+        self.ramka1.pack(padx=5, pady=5, side=TOP)
+
+        lab1 = tk.Label(self.ramka1, text="Wyniki ostatniego losowania:", font=(
+            "Arial", 14), bg="#F0E68C")
+        lab1.place(x=10, y=10)
+
+        polozenieX = 10
+        polozenieY = 40
+        losowane = []
+        conn = sqlite3.connect('baza.db')
+        c = conn.cursor()
+        c.execute("SELECT * FROM lotto ORDER BY id DESC LIMIT 1")
+        records = c.fetchall()
+        for reco in records:
+            tk.Label(self.ramka1, text="data losowania: "+str(reco[2]), font=(
+                "Arial", 13), bg="#F0E68C").place(x=polozenieX, y=polozenieY)
+            tk.Label(self.ramka1, text="  liczby: "+str(reco[3])+", "+str(reco[4])+", "+str(reco[5])+", "+str(reco[6])+", "+str(
+                reco[7])+", "+str(reco[8]), font=("Arial", 13, "bold"), bg="#F0E68C").place(x=polozenieX+250, y=polozenieY)
+            losowane.append(int(reco[3]))
+            losowane.append(int(reco[4]))
+            losowane.append(int(reco[5]))
+            losowane.append(int(reco[6]))
+            losowane.append(int(reco[7]))
+            losowane.append(int(reco[8]))
+
+        conn.close()
+
+        conn = sqlite3.connect('baza.db')
+        c = conn.cursor()
+        c.execute("SELECT * FROM liczbyUser")
+        records = c.fetchall()
+
+        trafienia = []
+        io = 320
+        ip = 80
+        for re in records:
+            typy_1 = int(re[4])
+            typy_2 = int(re[5])
+            typy_3 = int(re[6])
+            typy_4 = int(re[7])
+            typy_5 = int(re[8])
+            typy_6 = int(re[9])
+            tk.Label(self.ramka1, text="Twoje wytypowane liczby: ", font=(
+                "Arial", 13), fg="green", bg="#F0E68C").place(x=polozenieX, y=polozenieY+ip)
+            tk.Label(self.ramka1, text=str(re[4])+", "+str(re[5])+", "+str(re[6])+", "+str(re[7])+", "+str(re[8])+", "+str(
+                re[9]), font=("Arial", 13, "bold"), fg="green", bg="#F0E68C").place(x=polozenieX+320, y=polozenieY+ip)
+            ip += 30
+
+            tk.Label(self.ramka1, text="Twoje trafienia: ", font=(
+                "Arial", 13), fg="brown", bg="#F0E68C").place(x=10, y=io)
+            for tt in losowane:
+                if tt == typy_1 or tt == typy_2 or tt == typy_3 or tt == typy_4 or tt == typy_5 or tt == typy_6:
+
+                    tk.Label(self.ramka1, text=tt, font=("Arial", 13),
+                             fg="white", bg="green").place(x=70 + ip, y=io)
+                    ip += 30
+            io += 30
+
+        conn.close()
+        but = tk.Button(self.ramka1, text="zamknij to okno",
+                        bg="#DC143C", command=self.zamknij_okno)
+        but.place(x=270, y=510)
 
 
 root = tk.Tk()
